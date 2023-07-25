@@ -9,7 +9,7 @@ Here are a series of blogs published on the [HPE Developer Community Portal](htt
 
 * 1/ [Open sourcing Workshops-on-Demand part 1: Why and How](https://developer.hpe.com/blog/willing-to-build-up-your-own-workshops-on-demand-infrastructure/)
 * 2/ [Open Sourcing Workshops-on-Demand part 2: How to Deploy the backend](https://developer.hpe.com/blog/open-sourcing-workshops-on-demand-part2-deploying-the-backend/)
-* 3/ [Open Sourcing Workshops-on-Demand part 3: Understanding the Backend](https://developer.hpe.com/blog/open-sourcing-workshops-on-demand-part3-understanding-the-backend/)
-* 4/ Open Sourcing Workshops-on-Demand part 4: Managing the Backend (To be Pubished)
+* 3/ [Open Sourcing Workshops-on-Demand part 3: Understand the Backend](https://developer.hpe.com/blog/open-sourcing-workshops-on-demand-part3-understanding-the-backend/)
+* 4/ Open Sourcing Workshops-on-Demand part 4: Manage the Backend (To be Pubished)
 * 5/ Open Sourcing Workshops-on-Demand part 5: How to Deploy the frontend and API servers (To be Pubished)
-* 6/ Open Sourcing Workshops-on-Demand part 6: Creating new workshops (To be Pubished)
+* 6/ Open Sourcing Workshops-on-Demand part 6: Create new workshops (To be Pubished)
