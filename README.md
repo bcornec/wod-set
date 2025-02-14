@@ -3,7 +3,7 @@
 ![hpedevlogo2](https://github.com/Workshops-on-Demand/.github/assets/25387895/05d10b28-4447-4b94-8169-f79e617ccde7)
 
 Workshops-on-Demand
-
+The Workshops-on-Demand infrastructure is currently based on virtual machines. By default, it requires 3 different virtual machines.
 
 Here are a series of blogs published on the [HPE Developer Community Portal](https://developer.hpe.com/blog) describing the genesis of the project. It also covers the deloyment phase of the different components as well as the creation of content.
 
