@@ -1,5 +1,11 @@
 ![hpedevlogo2](https://github.com/Workshops-on-Demand/.github/assets/25387895/05d10b28-4447-4b94-8169-f79e617ccde7)
 
+# Workshops-on-Demand architecture
+
+What is the goal of the Workshops-on-Demand (WoD) ? Make it easy to register for and run jupyter notebooks you can host yourself thanks to this infrastructure.
+
+![100 feet view of the WoD Architecture](img/howto-wod-6.png)
+
 # Workshops-on-Demand documentation
 
 Here are a series of blogs published on the [HPE Developer Community Portal](https://developer.hpe.com/blog) describing the genesis and the architecture of the project. It also covers the deloyment phase of the different components as well as the creation of content.
