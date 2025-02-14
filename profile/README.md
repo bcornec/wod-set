@@ -30,4 +30,34 @@ In order to install a full infrastructure, a set of reliminary steps are require
 * Then you use the installer to install your WoD infrastructure: `cd wod-backend/install ; ./install.sh -h`
 * [Reading the example](https://github.com/Workshops-on-Demand/wod-backend/blob/main/install/install.sh#L89) for the full infrastructure at the end of the help message should give you the required guidance to set it up.
 
+At the time of this writing, this reads:
+```
+Full installation example of a stack with:
+- 2 backend servers be1 and be2 using port 8010
+- 1 api-db server apidb on port 10000
+- 1 frontend server front on port 8000
+- all declared on the .local network
+- internal postfix server running on port 9000
+- e-mail sender being wodmailer@local
+- ansible groupname being test
+- management user being wodmgr
+ 
+On the be1 machine:
+  ./install.sh -a apidb.local:10000 -f front.local:8000 \
+  -g test -u wodmgr -p 9000 -s wodmailer@local\
+  -b be1.local:8010 -n 1 -t backend \
+On the be2 machine:
+  ./install.sh -a apidb.local:10000 -f front.local:8000 \
+  -g test -u wodmgr -p 9000 -s wodmailer@local\
+  -b be2.local:8010 -n 2 -t backend \
+On the apidb machine:
+  ./install.sh -a apidb.local:10000 -f front.local:8000 \
+  -g test -u wodmgr -p 9000 -s wodmailer@local\
+  -b be1.local:8010,be2.local:8010 -t api-db \
+On the frontend machine:
+  ./install.sh -a apidb.local:10000 -f front.local:8000 \
+  -g test -u wodmgr -p 9000 -s wodmailer@local\
+  -t frontend \
+```
+
 Note that the installer should support Rocky/Alma or Debian fairly easily instead of Ubuntu, but tests have not been fully performed. Contributions welcome.
