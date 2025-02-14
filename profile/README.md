@@ -1,5 +1,3 @@
-# .github
- 
 ![hpedevlogo2](https://github.com/Workshops-on-Demand/.github/assets/25387895/05d10b28-4447-4b94-8169-f79e617ccde7)
 
 # Workshops-on-Demand
