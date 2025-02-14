@@ -1,10 +1,28 @@
 ![hpedevlogo2](https://github.com/Workshops-on-Demand/.github/assets/25387895/05d10b28-4447-4b94-8169-f79e617ccde7)
 
+![WoD frontend](img/wod-frontend.png)
+
 # Workshops-on-Demand architecture
 
 What is the goal of the Workshops-on-Demand (WoD) ? Make it easy to register for and run jupyter notebooks you can host yourself thanks to this infrastructure.
 
 ![100 feet view of the WoD Architecture](img/howto-wod-6.png)
+
+The WoD infrastructure comprises 3 differents systems to work, that are usually spread across 3 machines:
+ 
+* a wod-backend machine, hosting the Jupyter Hub and the WoD templates to generate the real workshop that a given student will run, witth eir metadata. This machine may also intercat with appliances for WoD neededd one, such as Docker e.g. You may have multiple wod-backend in case of a large setup. Corresponding software on the repos [wod-backend](https://github.com/Workshops-on-Demand/wod-backend), [wod-notebooks templates](https://github.com/Workshops-on-Demand/wod-notebooks), [wod-private optional setup](https://github.com/Workshops-on-Demand/wod-private)
+* a wod-api-db machine hosting the WoD API service and a PostgreSQL database to store live information about the running platform. Corresponding software on the repo [wod-api-db](https://github.com/Workshops-on-Demand/wod-api-db)
+* a wod-fronted machine, hosting the Web interface to see the list of available workshops and book one. Corresponding software on the repo [wod-frontend](https://github.com/Workshops-on-Demand/wod-frontend)
+
+The WoD architecture uses REST and MAIL API to allow communication between its nodes
+![REST and MAIL API communications](img/howto-wod-1.png)
+
+It is build on shoulders of giants
+![Tools used by the WoD infrastructure](img/howto-wod-4.png)
+
+iBefore a note book is made available to the user requesting it, there are a certain number of cimmunications hapening between machines
+![Ordered communications](img/howto-wod-10.png)
+
 
 # Workshops-on-Demand documentation
 
@@ -17,13 +35,9 @@ Here are a series of blogs published on the [HPE Developer Community Portal](htt
 * 5/ Open Sourcing Workshops-on-Demand part 5: How to Deploy the frontend and API servers (To be Published)
 * 6/ Open Sourcing Workshops-on-Demand part 6: Create new workshops (To be Published)
 
-# WoD infrastructure functions and repositories
-
-The WoD infrastructure comprises 3 differents systems to work, that are usually spread across 3 machines:
- 
-* a wod-backend machine, hosting the Jupyter Hub and the WoD templates to generate the real workshop that a given student will run, witth eir metadata. This machine may also intercat with appliances for WoD neededd one, such as Docker e.g. You may have multiple wod-backend in case of a large setup. Corresponding software on the repos [wod-backend](https://github.com/Workshops-on-Demand/wod-backend), [wod-notebooks templates](https://github.com/Workshops-on-Demand/wod-notebooks), [wod-private optional setup](https://github.com/Workshops-on-Demand/wod-private)
-* a wod-api-db machine hosting the WoD API service and a PostgreSQL database to store live information about the running platform. Corresponding software on the repo [wod-api-db](https://github.com/Workshops-on-Demand/wod-api-db)
-* a wod-fronted machine, hosting the Web interface to see the list of available workshops and book one. Corresponding software on the repo [wod-frontend](https://github.com/Workshops-on-Demand/wod-frontend)
+You can also refer to the various presentations made on this project:
+* [JDLL 2024](https://pretalx.jdll.org/jdll2024/talk/VUEQFM/)
+* [AlpOSS 2024](https://alposs.fr/2024/presentations/03%20-%20HPE%20-%20Bruno%20Cornec.pdf)
 
 # Installing a WoD infrastructure
 
