@@ -28,6 +28,7 @@ Before a note book is made available to the user requesting it, there are a cert
 
 Here are a series of blogs published on the [HPE Developer Community Portal](https://developer.hpe.com/blog) describing the genesis and the architecture of the project. It also covers the deloyment phase of the different components as well as the creation of content.
 
+* 0/ [From Jupyter Notebooks-as-a-Service to HPE DEV Workshops-on-Demand](https://developer.hpe.com/blog/from-jupyter-notebooks-as-a-service-to-hpe-dev-workshops-on-demand/)
 * 1/ [Open sourcing Workshops-on-Demand part 1: Why and How](https://developer.hpe.com/blog/willing-to-build-up-your-own-workshops-on-demand-infrastructure/)
 * 2/ [Open Sourcing Workshops-on-Demand part 2: How to Deploy the backend](https://developer.hpe.com/blog/open-sourcing-workshops-on-demand-part2-deploying-the-backend/)
 * 3/ [Open Sourcing Workshops-on-Demand part 3: Understand the Backend](https://developer.hpe.com/blog/open-sourcing-workshops-on-demand-part3-understanding-the-backend/)
@@ -36,6 +37,8 @@ Here are a series of blogs published on the [HPE Developer Community Portal](htt
 * 6/ Open Sourcing Workshops-on-Demand part 6: Create new workshops (To be Published)
 
 You can also refer to the various presentations made on this project:
+* [LCA 2021](https://www.youtube.com/watch?v=D6Ss3T2p008)
+* [OSXP 2021](https://www.slideshare.net/HuinLucile/api-rest-procmail-la-rescousse)
 * [JDLL 2024](https://pretalx.jdll.org/jdll2024/talk/VUEQFM/)
 * [AlpOSS 2024](https://alposs.fr/2024/presentations/03%20-%20HPE%20-%20Bruno%20Cornec.pdf)
 
