@@ -66,19 +66,19 @@ Full installation example of a stack with:
 - management user being wodmgr
  
 On the be1 machine:
-  ./install.sh -a apidb.local:10000 -f front.local:8000 \
+  sudo ./install.sh -a apidb.local:10000 -f front.local:8000 \
   -g test -u wodmgr -p 9000 -s wodmailer@local\
   -b be1.local:8010 -n 1 -t backend \
 On the be2 machine:
-  ./install.sh -a apidb.local:10000 -f front.local:8000 \
+  sudo ./install.sh -a apidb.local:10000 -f front.local:8000 \
   -g test -u wodmgr -p 9000 -s wodmailer@local\
   -b be2.local:8010 -n 2 -t backend \
 On the apidb machine:
-  ./install.sh -a apidb.local:10000 -f front.local:8000 \
+  sudo ./install.sh -a apidb.local:10000 -f front.local:8000 \
   -g test -u wodmgr -p 9000 -s wodmailer@local\
   -b be1.local:8010,be2.local:8010 -t api-db \
 On the frontend machine:
-  ./install.sh -a apidb.local:10000 -f front.local:8000 \
+  sudo ./install.sh -a apidb.local:10000 -f front.local:8000 \
   -g test -u wodmgr -p 9000 -s wodmailer@local\
   -t frontend \
 ```
