@@ -23,9 +23,9 @@ At this point, the registration panel pops up.
 Enter the details requested and click on the **Take the Workshop** button. In a matter of just a few minutes, you’ll start your workshop.
 
 
-![take the workshop pramod creds highlighted](https://hpe-developer-portal.s3.amazonaws.com/uploads/media/2020/7/take-the-workshop-pramod-creds-highlighted-1600260627823.png)
+![take the workshop](img/hackshack-register.png)
 
-By pressing the **Take the Workshop button**, you initiate a back-end automated registration process. This process spawns a dedicated notebook environment for you and sends you a welcome email indicating that you have been registered in the database. 
+By pressing the **Register for the Workshop button**, you initiate a back-end automated registration process. This process spawns a dedicated notebook environment for you and sends you a welcome email indicating that you have been registered in the database.
 
 ![welcome email modified](https://hpe-developer-portal.s3.amazonaws.com/uploads/media/2020/7/welcome-email-modified-1600260633309.png)
 
