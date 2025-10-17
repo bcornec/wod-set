@@ -17,7 +17,7 @@ In the rest of this user's guide, we will use the existing HPE DEV Hackshack pla
 Those who wish to enroll in the workshop should go to the [Hack Shack Workshop page](https://developer.hpe.com/hackshack/workshops/). From there, select which on-demand workshop you want to take and click on the **Register** button:
 
 
-![navigate register button](https://hpe-developer-portal.s3.amazonaws.com/uploads/media/2020/7/navigate-register-button-1600260600088.png)
+![navigate register button](img/hackshack-workshops.png)
 
 At this point, the registration panel pops up. 
 Enter the details requested and click on the **Take the Workshop** button. In a matter of just a few minutes, you’ll start your workshop.
