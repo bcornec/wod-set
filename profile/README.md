@@ -37,9 +37,9 @@ Before a note book is made available to the user requesting it, there are a cert
 
 # Workshops-on-Demand documentation
 
-First you may want to read the [User's guide](GUIDE.md) to understand how to use the WoD solution, and how it's working from a user's perspective.
+First you may want to read the [User's guide](USER-GUIDE.md) to understand how to use the WoD solution, and how it's working from a user's perspective.
 
-Then there is the [technical documentation](DOCUMENTATION.md) describing the genesis and the architecture of the project. It also covers the deloyment phase of the different components as well as the creation of content.
+Then there is the [technical documentation](ADMIN-GUIDE.md) describing the genesis and the architecture of the project. It also covers the deloyment phase of the different components as well as the creation of content.
 
 These articles were originally published on the [HPE Developer Community Portal](https://developer.hpe.com/blog) as blog articles.
 
