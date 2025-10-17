@@ -27,24 +27,33 @@ Enter the details requested and click on the **Take the Workshop** button. In a 
 
 By pressing the **Register for the Workshop button**, you initiate a back-end automated registration process. This process spawns a dedicated notebook environment for you and sends you a welcome email indicating that you have been registered in the database.
 
-![welcome email modified](https://hpe-developer-portal.s3.amazonaws.com/uploads/media/2020/7/welcome-email-modified-1600260633309.png)
+![welcome email modified](img/hackshack-welcome.png)
 
 Not long after, it sends you a second email providing a link to your workshop, along with your StudentID and password.
 
-![highlighted clock](https://hpe-developer-portal.s3.amazonaws.com/uploads/media/2020/7/highlighted-clock-1600260594291.jpg)
+![highlighted clock](img/hackshack-creds.png)
 
 > **IMPORTANT: Receipt of this email indicates that the workshop environment is ready for you to begin. You will have just 4 hours from the receipt of this second email to complete the workshop. It is recommended that you only register for a workshop when you know you will have the next 4 hours to work on it. We advise you to regularly save your work and download the Jupyter Notebook to refer to later should you not be able to finish the course within the given 4-hour time slot. If you cannot finish the workshop in that time, you will need to run the course again from the beginning.**
 
 ## The Jupyter Notebook-based workshops
 
-A Jupyter Notebook is an open-source web application that allows you to create and share documents that contain live code, equations, visualizations and narrative text. The Jupyter Project was an important step forward for sharing and interactive development.  [Project Jupyter’s](https://jupyter.org/index.html) [JupyterHub](https://jupyterhub.readthedocs.io/en/stable/) was created to support many users. The Hub can offer notebook servers to an entire class of students, a corporate data science workgroup, a scientific research project team, or a high-performance computing group. With [JupyterHub](https://github.com/jupyterhub/jupyterhub), you can create a multi-user Hub that spawns, manages, and proxies multiple instances of the single-user [Jupyter Notebook](https://mybinder.org/v2/gh/ipython/ipython-in-depth/master?filepath=binder/Index.ipynb) server.
+To give you a bit of background: The [Jupyter project](https://jupyter.org/index.html) (for Julia / Python / R) is the result of a project called [IPython](https://en.wikipedia.org/wiki/IPython), which is an advanced Python interpreter, that improves the productivity of your code in Python. IPython has gradually evolved, notably with the creation of Notebooks, and now offers a web interface in JSON format that allows you to run initialy a Python kernel and to code directly in a browser with a display of intermediate results. The Jupyter Project was an important step forward for sharing and "interactive" development. [Project Jupyter’s](https://jupyter.org/index.html) [JupyterHub](https://jupyterhub.readthedocs.io/en/stable/) was created to support many users. The Hub can offer notebook servers to an entire class of students, a corporate data science workgroup, a scientific research project team, or a high-performance computing group. With [JupyterHub,](https://github.com/jupyterhub/jupyterhub) you can create a multi-user Hub that spawns, manages, and proxies multiple instances of the single-user [Jupyter Notebook](https://mybinder.org/v2/gh/ipython/ipython-in-depth/master?filepath=binder/Index.ipynb) server.
 
-As explained in Fred Passeron’s earlier post, [Jupyter saved my day](/blog/jupyter-saved-my-day), for our on-demand workshops the notebooks contain simple Python or Powershell pieces of codes to interact with the different APIs available in the HPE portfolio. All instructions are provided in a markdown format. We centralize the different notebooks on a single JupyterHub server. 
+![Jupyter Hub Architecture](img/jupyterhub-arch.png)
+
+## What is a Jupyter Notebook?
+
+To put it simply, a Jupyter Notebook is an open-source web application that allows you to create and share documents that contain live code, equations, visualizations and narrative text. Uses include data cleaning and transformation, numerical simulation, statistical modeling, data visualization, machine learning, and much more. In our case, Notebooks contain simple Python or shell or other pieces of codes to interact with the different APIs available studied in the Notebook. Instructions are provided in a [markdown](https://en.wikipedia.org/wiki/Markdown) format. We centralize the different notebooks on a single [JupyterHub](https://jupyterhub.readthedocs.io/en/stable/) server. This allows us to replicate them across the multiple students currently configured on the server fairly easily through Ansible playbooks. When changes are necessary (fixing a typo for instance in a notebook), updates can be performed quickly by just launching the playbook.
+
+![View of a Notebook](img/jupyterhub-notebook.png)
+
+From a course standpoint, the notebook format is a really simple and flexible solution. Students can even download the notebooks and run them locally on their laptops if they want to do them again later on or reuse some of the code for their own projects. It's also a convenient way of maintaining existing Notebooks for producers, and the simple Markdown format makes it appealing for new contriutors to add to the collection of Notebooks.
+
+## Running the Workshop on Demand
 
 When you click on the **Start Workshop** button found in your second email, it will bring you to a **Sign In** page where you will log into the workshop with your StudentID and the password provided in your second email.
 
-
-![workshop screen 1 (3)](https://hpe-developer-portal.s3.amazonaws.com/uploads/media/2020/7/workshop-screen-1-3-1600260638100.png)
+![JupyterHub login screen](img/jupyterhub-login.png)
 
 Once you log in, open the workshop folder on the left by double-clicking on it. 
 
