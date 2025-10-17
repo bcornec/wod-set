@@ -10,7 +10,7 @@ What is the goal of the Workshops-on-Demand (WoD) ? Make it easy to register for
 
 The WoD infrastructure comprises 3 differents systems to work, that are usually spread across 3 machines:
  
-* a wod-backend machine, hosting the Jupyter Hub and the WoD templates to generate the real workshop that a given student will run, witth eir metadata. This machine may also intercat with appliances for WoD neededd one, such as Docker e.g. You may have multiple wod-backend in case of a large setup. Corresponding software on the repos [wod-backend](https://github.com/Workshops-on-Demand/wod-backend), [wod-notebooks templates](https://github.com/Workshops-on-Demand/wod-notebooks), [wod-private optional setup](https://github.com/Workshops-on-Demand/wod-private)
+* a wod-backend machine, hosting the Jupyter Hub and the WoD templates to generate the real workshop that a given student will run, with their metadata. This machine may also interact with appliances for WoD needing one, such as Docker e.g. You may have multiple wod-backend in case of a large setup. Corresponding software on the repos [wod-backend](https://github.com/Workshops-on-Demand/wod-backend), [wod-notebooks templates](https://github.com/Workshops-on-Demand/wod-notebooks), [wod-private optional setup](https://github.com/Workshops-on-Demand/wod-private)
 * a wod-api-db machine hosting the WoD API service and a PostgreSQL database to store live information about the running platform. Corresponding software on the repo [wod-api-db](https://github.com/Workshops-on-Demand/wod-api-db)
 * a wod-fronted machine, hosting the Web interface to see the list of available workshops and book one. Corresponding software on the repo [wod-frontend](https://github.com/Workshops-on-Demand/wod-frontend)
 
@@ -25,19 +25,23 @@ Before a note book is made available to the user requesting it, there are a cert
 
 * 1/ The user chooses the Workshop to run on the WoD Frontend portal through an https request
 * 2/ The WoD Frontend exchanges with the WoD API-DB server to setup the customer, and manage the request of workshop (availability, capacity, ...). The infos generated are stored in the DB.
-* 3/ The WoD API-DB server sends a mail to the procmail service in order to setup the required elements on backend side (jupyter notebook, potentially appliances, resources, ... in 3b). The full deployment is managed with shell scripts and ansible playbooks.
-* 4/ The WoD API-DB server prepares e-mails to be sent by the WoD Backend server to the user to give appropriate credentials.
-* 5/ The user runs his Jupyter notebook Workshop on Demand by connecting through https to the WoD Backend Jupyter Hub
-* 6/ The Notebook may access additional resources managed by appliances (storage, specific application, Hardware component, ...)
+* 3/ The WoD API-DB server sends a mail to the procmail service on the WoD backend in order to setup the required elements (jupyter notebook, potentially appliances, resources, ... in 3b). The full deployment is managed with shell scripts and ansible playbooks.
+* 4/ The WoD API-DB server prepares e-mails to be sent by the WoD Backend server to the user to give appropriate welcome and credentials.
+* 5/ The user runs his Jupyter notebook Workshop on Demand by connecting through https to the WoD Backend Jupyter Hub.
+* 6/ The Notebook may access additional resources managed by appliances (storage, specific applications, Hardware components, ...)
 * 7/ The WoD Backend server manages status and progresses by making https REST API calls to the WoD API-DB server, up to the end of the time slot.
 * 8/ The WoD API-DB server keeps track of live data concerning the user and the workshops in its DB.
-* 9/ The WoD Backend server warns the user of time remaining up to the end, and sneds also polls when the Workshop on Demand is finished.
-* 10/ The user fills the poll on the WoD Backend server.
+* 9/ The WoD Backend server warns the user of time remaining up to the end, and sends also polls when the Workshop on Demand is finished.
+* 10/ The user fills the poll ans wins badges.
 
 
 # Workshops-on-Demand documentation
 
-Here are a series of blogs published on the [HPE Developer Community Portal](https://developer.hpe.com/blog) describing the genesis and the architecture of the project. It also covers the deloyment phase of the different components as well as the creation of content.
+First you may want to read the [User's guide](USER-GUIDE.md) to understand how to use the WoD solution, and how it's working from a user's perspective.
+
+Then there is the [technical documentation](ADMIN-GUIDE.md) describing the genesis and the architecture of the project. It also covers the deloyment phase of the different components as well as the creation of content.
+
+These articles were originally published on the [HPE Developer Community Portal](https://developer.hpe.com/blog) as blog articles.
 
 * 0/ [From Jupyter Notebooks-as-a-Service to HPE DEV Workshops-on-Demand](https://developer.hpe.com/blog/from-jupyter-notebooks-as-a-service-to-hpe-dev-workshops-on-demand/)
 * 1/ [Open sourcing Workshops-on-Demand part 1: Why and How](https://developer.hpe.com/blog/willing-to-build-up-your-own-workshops-on-demand-infrastructure/)
@@ -48,7 +52,7 @@ Here are a series of blogs published on the [HPE Developer Community Portal](htt
 
 You can also refer to the various presentations made on this project:
 * [LCA 2021](https://www.youtube.com/watch?v=D6Ss3T2p008)
-* [OSXP 2021](https://www.slideshare.net/HuinLucile/api-rest-procmail-la-rescousse)
+* [OSXP 2021](https://www.slideshare.net/HuinLucile/api-rest-procmail-la-rescousse) and the [Video](https://www.youtube.com/watch?v=zZm6ObQATDI)
 * [JDLL 2024](https://pretalx.jdll.org/jdll2024/talk/VUEQFM/)
 * [AlpOSS 2024](https://alposs.fr/2024/presentations/03%20-%20HPE%20-%20Bruno%20Cornec.pdf)
 
@@ -59,7 +63,7 @@ In order to install a full infrastructure, a set of reliminary steps are require
 * Install a VM/Physical machine with [Ubuntu 24.04 LTS](https://www.ubuntu-fr.org/download/) minimal and default setup. (20.04 or 22.04 should still work, while less tested these days).
 * On each VM the user ubuntu is being created and can be used for the initial setup. For access to the machine and account refer to the [Ubuntu documentation](https://ubuntu.com/server/docs/basic-installation) or how a VM template was set up. Ensure that this user as root access (either via sudo or with password access)
 * Then you have to ensure minimal dependencies are present to run the installation. We only need git. All other dependencies are installed by the installer. So issue on each machine: `sudo apt install git`
-* Once installed you can use it to clone the installer [wod-install repository](https://github.com/Workshops-on-Demand/wod-install)) again on each machine: `git clone https://github.com/Workshops-on-Demand/wod-install`
+* Once installed you can use it to clone the installer [wod-install repository](https://github.com/Workshops-on-Demand/wod-install) again on each machine: `git clone https://github.com/Workshops-on-Demand/wod-install`
 * Then you use the installer to install your WoD infrastructure: `cd wod-install/install ; ./install.sh -h`
 * [Reading the example](https://github.com/Workshops-on-Demand/wod-backend/blob/main/install/install.sh#L89) for the full infrastructure at the end of the help message should give you the required guidance to set it up.
 
@@ -76,7 +80,7 @@ Full installation example of a stack with:
 - management user being wodmgr
  
 On the be1 machine:
-  sudo ./install.sh -a apidb.local:10000::https -f front.local:8000:https \
+  sudo ./install.sh -a apidb.local:10000:https -f front.local:8000:https \
   -g test -u wodmgr -p 9000 -s wodmailer@local\
   -b be1.local:8010 -n 1 -t backend \
 On the be2 machine:
@@ -84,7 +88,7 @@ On the be2 machine:
   -g test -u wodmgr -p 9000 -s wodmailer@local\
   -b be2.local:8010 -n 2 -t backend \
 On the apidb machine:
-  sudo ./install.sh -t apidb -b .local:10000 -f front.local:8000 \
+  sudo ./install.sh -a apidb.local:10000:https -f front.local:8000:https \
   -g test -u wodmgr -p 9000 -s wodmailer@local\
   -b be1.local:8010,be2.local:8010 -t api-db \
 On the frontend machine:
