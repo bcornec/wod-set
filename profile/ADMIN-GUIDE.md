@@ -4,25 +4,25 @@ Leveraging the JupyterHub technology, the HPE DEV team, at the origin of the pro
 
 Now, let me explain how we made this possible…
 
-## Where it all comes from
+# Where it all comes from
 
 We built up our first JupyterHub server for the virtual HPE Technology & Solutions Summit (TSS) that took place in March 2020 and used it to deliver the workshops we would normally give in person in a virtual way. We hosted just a few Jupyter notebooks-based workshops and found that they scored really well in feedback we received from the students. All notebooks were delivered through a single instance of a JupyterHub server.
 
 During the event, we ran only a single workshop at a time. We first set up a range of users (students) to match a given workshop. It required a lot of manual setup, a few scripts and a single Ansible playbook to handle the copy of the workshop content assigned to the desired range of students, with a few variable substitutions like student IDs, passwords, and some API endpoints when relevant. The student assignment was done manually, at the beginning of every workshop. For instance, Fred was student1, Didier was student2, and so on… which was quite cumbersome. When you only have a range of 25 students, one or two people handling the back end is sufficient. But if 40 people show up, then it becomes tricky.
 
-This initial work lead us the the following results collected in our dashboard presenting:
+This initial work lead us the following results collected in our dashboard presenting:
 -    The number of Active Workshops
 -    The active workshops by type
--    The total number of registrations from November 1st 2020 till today
+-    The total number of registrations from November 1st 2020 till March 30th 2021
 -    The total number of Customer (student) registrations
 -    The total workshops split
 ![Hackshack Dashboard](img/hackshack-dashboard.png)
 
-As you can see, moving from a heavily manually oriented approach to now a fully automated one helped increase our numbers.
+As you can see, moving from a heavily manually oriented approach to now a fully automated one helped increase our numbers. By the end of 2022, more than 4000 had registered for our workshops.
 
 Of course, as automation minded people, we could not stay like that for long, so we decided to build a framework to help us deliver more Workshops on Demand (aka WoD) and began our 5 years journey of developing it till version 1.0.0 :-)
 
-## Architecture considerations
+# Architecture considerations
 
 Soon we realized that for the project to be usable, we would need to improve various aspects. Our needs were the follwing:
 - provide a registration portal to allow workshop exposure and automated user registration. 
@@ -91,13 +91,13 @@ We created as many Git repositories as needed, for the infrastructure management
 - [wod-install](https://github.com/Workshops-on-Demand/wod-install) for the installation of the infrastructure
 - [wod-doc](https://github.com/Workshops-on-Demand/.github) for the project documentation (you're on it !)
 
-## How it works
+# How it works
 
 Let me first show you how the overall process works for our Workshops-on-Demand:
 
 ![Workshops-on-Demand principles](img/wod-principles.png)
 
-If you’re looking for a live explanation of this automation, you can review [the following session](https://www.youtube.com/watch?v=D6Ss3T2p008&t=515s) delivered at Linuxconf in Australia in January 2021. If you prefer reading, consider our [User's Guide](USER-GUIDE.md)
+If you’re looking for a live explanation of this automation, you can review [the following session](https://www.youtube.com/watch?v=D6Ss3T2p008&t=515s) delivered at Linuxconf in Australia in January 2021. If you prefer reading, consider our [User's Guide](USER-GUIDE.md). Here we'll go into more technical details on how this performed:
 
 **Step 1:** The customer registers for a workshop online at our portal. When clicking the register button for the selected workshop and after agreeing to the terms and conditions, the frontend triggers the first REST API calls to the API-DB server:
 -    Register the student in the Customers Database.
@@ -133,15 +133,11 @@ At the end of this automated process, the backend makes a series of API calls to
 
 # A bit of background
 
-[The Workshops-on-Demand program ](https://developer.hpe.com/hackshack/workshops/) has been an important asset for the HPE Developer Community for the last 2 years. If you are interested in learning more on the genesis of the project, check the following [blog](https://developer.hpe.com/blog/from-jupyter-notebooks-as-a-service-to-hpe-dev-workshops-on-demand/).
-
-This program allows us to deliver free hands-on workshops. We use these during HPE sponsored events, like HPE Discover and HPE Technical Symposium Summit, as well as open source events, like  Open Source Summit and KubeCon, to promote API/automation-driven solutions along with some 101-level coding courses. B﻿y the end of 2022, more than 4000  had registered for our workshops.
+This solution allows us to deliver free hands-on workshops. It has been used during events, (HPE Discover, HPE TSS, as well as Open Source Summit, KubeCon), and during training sessions (HPE trainings, RMLL, Campus Numérique, ...) to promote API/automation-driven solutions along with some 101-level coding courses.
 
 If you are interested in creating your own training architecture to deliver workshops, this project is definitely for you. It would allow you to create, manage content and deliver it in an automated and very efficient way. Once ready, the infrastructure can deliver workshops in matter of minutes!
 
 Trying to build a similar architecture on your own is obviously possible, but we integrated so much automation around the different components like the JupyterHub server deployment along with multiple pre installed kernels, user management and much more. When leveraging our project, one can actually get a proper public-based environment in 2 hours.
-
-This very first article will set the stage for the following blog articles where I will explain how to setup your own Workshops-on-Demand infrastructure. 
 
 ## Why would we consider open sourcing our Workshops-on-Demand?
 
