@@ -1,113 +1,87 @@
-[![HackShack]( img/hackshack)]( /hackshack/workshops)
+![Frontend](img/wod-frontend.img)
 
-At the end of a [blog post](https://developer.hpe.com/blog/jupyter-saved-my-day) I wrote a year ago, I left off with an idea: Jupyter Notebooks-as-a-Service. Apparently, our HPE DEV team thought it was a great idea, because we went on to create the HPE DEV Workshops-on-Demand. While the name is different, the ultimate goal remained the same. Leveraging the JupyterHub technology, the HPE DEV team created a set of hands-on technology training workshops where anyone could connect to our service and benefit from notebook-based workshops at any time, and from anywhere. 
-
-
-In our Workshops-on-Demand, users can actually interact and play with code to learn about a variety of different subjects. From infrastructure automation, coding 101 or API-related content, the Workshops-on-Demand catalog covers a broad range of subjects where you can learn about new technologies for free.
-
-
-Check out all the different topics we offer [here](/hackshack/workshops).
-
+Leveraging the JupyterHub technology, the HPE DEV team, at the origin of the project, created a set of hands-on technology training workshops where anyone could connect to our service and benefit from notebook-based workshops at any time, and from anywhere. Read our [User's Guide](USER-GUIDE.md) to see it in action.
 
 Now, let me explain how we made this possible…
 
-
-## Early prototype
+## Where it all comes from
 
 We built up our first JupyterHub server for the virtual HPE Technology & Solutions Summit (TSS) that took place in March 2020 and used it to deliver the workshops we would normally give in person in a virtual way. We hosted just a few Jupyter notebooks-based workshops and found that they scored really well in feedback we received from the students. All notebooks were delivered through a single instance of a JupyterHub server.
 
-
 During the event, we ran only a single workshop at a time. We first set up a range of users (students) to match a given workshop. It required a lot of manual setup, a few scripts and a single Ansible playbook to handle the copy of the workshop content assigned to the desired range of students, with a few variable substitutions like student IDs, passwords, and some API endpoints when relevant. The student assignment was done manually, at the beginning of every workshop. For instance, Fred was student1, Didier was student2, and so on… which was quite cumbersome. When you only have a range of 25 students, one or two people handling the back end is sufficient. But if 40 people show up, then it becomes tricky.
 
+Of course, as automation minded people, we could not stay like that for long, so we decided to build a framework to help us deliver more Workshops on Demand (aka WoD) and began our 5 years journey of developing it :-)
 
-## Standing up
+## Architecture considerations
 
-We offered this virtual training first at TSS and then Aspire, (two internal HPE events.) Then HPE Discover, the largest HPE technology event, appeared on the radar. We were asked to renew the content of the workshops, add in new subjects like artificial intelligence (AI), machine learning operations (MLOPS), containers, etc. and that’s what we did. We also needed to provide a registration portal to allow automated customer registration. 
+Soon we realized that for the project to be usable, we would need to improve various aspects. Our needs were the follwing:
+- provide a registration portal to allow workshop exposure and automated user registration. 
+- automate fully all the tasks on the platform (deployment of the notebook, once chosen on that portal, cleanup, security, ...)
+- keep track of the association made between users and students, the workshop chosen, 
+- manage workshops (capacity, reset specificities, ...)
+- add easily more content to the platform, developed by contributors
+- manage a private set of data (content, parameters, scripts) in addition to the public one provided
+- support mulitple locations for redundancy, technology specificities
+- operate multiple platforms (dev, staging, production, ...)
+- operate as well on VMs or physical servers
+- deploying the platform from zero to ready to operate fully automated
 
+As you can see, we have a few environments to deploy and manage. The various aspects were coded during 5 years to reach the desired state expressed upper. Without automation, it would have been too much work and prone to error. That was a key aspect of our approach.
 
-Both the workshop and challenge activities we planned on providing at HPE Discover were notebooks-based. The workshop was a follow-along, hands-on lab (aka an instructor-led workshop). The code challenges were different in that those who participated were asked to answer questions and then produce code snippets for a dedicated problem with the goal of winning a prize for the best submission. To assist in streamlining our processes, our developer, Pramod, stood up a nice app that allowed customers to register as well as automated the deployment of the notebooks. We implemented it only for the code challenges. The deployment for the workshops remained manual. These challenges allowed us to validate the beta version of the registration app.
+We quickly chose the various tools that will help us manage this efficiently:
+- Linux for the OS ([Ubuntu LTS](https://ubuntu.com/download/server) being the primary distribution, CentOS/[Rocky Linux](https://rockylinux.org/download) the alternative for backend)
+- [Ansible](https://en.wikipedia.org/wiki/Ansible_(software)) for automation and conformity management
+- [YAML](https://en.wikipedia.org/wiki/YAML) for configuration files (wod.yml, ansible playbooks and variables)
+- [Git](https://en.wikipedia.org/wiki/Git) as a configuration management system storing all our files and [GitHub](https://github.com/Workshops-on-Demand) for publication 
+- [PostgreSQL](https://en.wikipedia.org/wiki/PostgreSQL) to store permanently some information around users, workshops, students, ...
+- [Javascript](https://en.wikipedia.org/wiki/JavaScript), [NodeJS](https://en.wikipedia.org/wiki/Node.js), [React](https://en.wikipedia.org/wiki/React_(software)), [Grommet](https://v2.grommet.io/) for the frontend and API servers
+- [REST](https://en.wikipedia.org/wiki/REST) API (The one from JupyterHub, and one we created for our project)
+- [SMTP](https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol) API using [procmail](https://en.wikipedia.org/wiki/Procmail) for our incoming communication with the backend
 
+From an architecture perspective, we rapidly agreed that we would need multiple machines/services:
+![Multiple servers/services](img/wod-infra-open-source.png)
+- A frontend server to manage he workshop list and allow user registration
+- An API server coupled with the Database to orchestrate the platform
+- A backend server on which will run the JupyterHub service and where the Notebooks will be deployed
+- Appliances servers running the technology at work in the Notebook (optional)
 
-## Walking (or First steps)
+For our automation, we have playbooks that would perform:
+- the server configuration (based on an existing deployed Operating System with just git installed) including:
+    - Repository Update
+    - Apps Installation
+    - System Performance Tuning including kernels setup & configuration 
+    and depending on the server:
+    - on backend:
+        - JupyterHub application installation and configuration
+        - Linux students creation
+        - JupyterHub users creation
+    - on frontend:
+         - Javascript setup with npm
+         - portal installation and launch
+    - on the API/DB:
+         - Javascript setup with npm
+         - PostgreSQL install and setup with sequelize
+         - REST API server installation and launch
+- the server conformity management (run after the previous playbook and on demand and nightly to ensure that the configuration is consistent and up to date):
+    - System Update
+    - Security Setup
+    - Services Conformity and check
+    - Templating of configration and data files
+- the notebooks deployment on the JupyterHub server:
+    - Templating the Notebook and data files
+    - Security setup
 
-By the end of the summer, we had many of the pieces in place that we needed to make the dream of Notebooks-as-a-Service a reality. We had the content and the automation to deliver it through an automation layer like Ansible. We also now had a registration app that simplified customer registration as well as workshop management (workshop capacity, workshop reset specificities, etc.). From this point, we really had something we could build upon.
+We created as many Git repositories as needed, for the infrastructure management:
+![WoD repositories](img/wod-repositories.png)
+- [wod-frontend](https://github.com/Workshops-on-Demand/wod-frontend) for the portal
+- [wod-api-db](https://github.com/Workshops-on-Demand/wod-api-db) for the REST API and PostgreSQL DB
+- [wod-backend](https://github.com/Workshops-on-Demand/wod-backend) for the JupyterHub
+- [wod-notebooks](https://github.com/Workshops-on-Demand/wod-notebooks) for the Notebooks provided
+- [wod-private](https://github.com/Workshops-on-Demand/wod-private) as a template fo using a private setup alongside the public one.
+- [wod-install](https://github.com/Workshops-on-Demand/wod-install) for the installation of the infrastructure
+- [wod-doc](https://github.com/Workshops-on-Demand/.github) for the project documentation
 
-
-Where everything was manual or lightly scripted before, we really need it to be fully automated in order to make this a viable solution. We developed each new workshop on a staging environment. When ready, we moved it to the production environment. We also had a third environment located on a different site that could be used to recover a workshop. This proved very advantageous when, on the first day of HPE Discover 2020, we had to recover everything from the secondary site a few hours before the event started, since a backhoe cut the internet line on main site. Today, we are also leveraging our HPE GreenLake offering to build up one more environment. This continues to be a work in progress. 
-
-As you can see, we have a few environments to deploy and manage. Without automation, it would be too much work and prone to error.
-
-
-Each server is associated to a logical location and role (Production, Staging, Sandbox, and GreenLake): Jupyter1 is the production server. Jupyter2 is the sandbox server. It is used to perform some early testing and is located in a different datacenter from the production and staging servers. Jupyter3 is the staging server. Workshops are developed and validated on this server before moving to production. Finally, Jupyter4 is deployed in a dedicated HPE GreenLake tenant. It will serve over time as a second production site.
-
-Each location is defined through a set of yaml files to specify the different parameters linked to the location (IP Addresses, Hostnames, etc…)
-
-
-
-```yaml
-PBKDIR: staging
-JPHOST: jupyter3.example.com
-JPIP: xx.xx.xx.xx
-JPHOSTEXT: nb3.example.com
-JPHUBAPISRV: http://{{ JPHOST }}:8000
-JPHUBTOKEN: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-BASESTDID: 0
-APIENDPOINT: https://example.com/api
-APIUSER: user
-APIPWD: password
-LDAPDMN: dc=example,dc=com
-#
-KIBANAPWD: "zzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
-KIBANAPORT: "xxxxxx"
-#
-STACKSTORMSRVNAME: "sta-stackstorm"
-STACKSTORMSRIP: "xx.xx.xx.xx"
-STACKSTORMWEBUIPORT: "yyyy"
-#
-VCENTERAPP: "vcenter.example.com"
-VCENTERADMIN: "user"
-VCENTERPWD: "xxxxxxx"
-#
-```
-
-
-
-We standardized on Ubuntu 20.04 and Centos 7 for the operating systems and created a few Ansible playbooks to prepare the servers.
-
-
-
-The first playbook based on a location parameter would perform:
-
-
-- the JupyterHub installation
-   - System Update
-   - Repository Update
-   - Apps Installation
-   - System Performance Tuning
-   - Security Setup
-   - JupyterHub application installation and configuration
-   - kernels setup & configuration 
-   - Linux users creation
-   - JupyterHub users creation
-
-
-
-The second playbook would take care of deploying the reference notebooks on the newly created JupyterHub server.
-
-
-
-A third playbook is run on demand and nightly to ensure that the configuration is consistent and up to date. 
-
-
-
-We created two Git repositories, one for the infrastructure management (and all the development we did to automate our deployments) and a second one for the reference notebooks’ content.
-
-
-## Running
-
-While we worked on automating the deployment/redeployment of a JupyterHub at will, we also focused on improving the notebooks’ deployment automation that we implemented earlier during HPE Discover.
-
-
+## How it works
 
 Let me first show you how the overall process works for our Workshops-on-Demand:
 
