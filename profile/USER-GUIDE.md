@@ -8,9 +8,9 @@ These on-demand workshops offer students an understanding of specific technologi
 
 Students will generally have between 2 and 4 hours to go through the course, which includes time to review the video replay (if available), follow the Jupyter Notebook instructions, and save their work to their local laptop should they want to do more work in their own environment or retake the workshop.
 
-Our goal is to provide both a platform that any structure can deploy onsite or in the cloud to support knowledge tranfer for their practitioners, as well as pre-existing content (which the HP DEV team also open sourced) on Open Source technologies. Those interested by the deplyment and architecture should read the [dedicated document](DOCUMENTATION.md).
+Our goal is to provide both a platform that any structure can deploy onsite or in the cloud to support knowledge transfer for their practitioners, as well as pre-existing content (which the HP DEV team also open sourced) on Open Source technologies. Those interested by the deployment and architecture of the platform should read the [dedicated document](ADMIN-GUIDE.md).
 
-In the rest of this user's guide, we will use the existing HPE DEV Hackshack platform to explain how things works. The only difference between the Open Source platform and HPE's one is the portal, more rich for HPE, providing blog articles, technical documentation, ... OK Time to start !
+In the rest of this user's guide, we will use the existing HPE DEV Hackshack platform to explain how things works. The only difference between the Open Source platform and HPE's one is the portal, richer for HPE, providing blog articles, technical documentation, ... OK Time to start !
 
 ## How it works
 
@@ -20,7 +20,7 @@ Those who wish to enroll in the workshop should go to the [Hack Shack Workshop p
 ![navigate register button](img/hackshack-workshops.png)
 
 At this point, the registration panel pops up. 
-Enter the details requested and click on the **Take the Workshop** button. In a matter of just a few minutes, you’ll start your workshop.
+Enter the details requested and click on the **Register for the Workshop** button. In a matter of just a few minutes, you’ll start your workshop.
 
 
 ![take the workshop](img/hackshack-register.png)
@@ -43,11 +43,11 @@ To give you a bit of background: The [Jupyter project](https://jupyter.org/index
 
 ## What is a Jupyter Notebook?
 
-To put it simply, a Jupyter Notebook is an open-source web application that allows you to create and share documents that contain live code, equations, visualizations and narrative text. Uses include data cleaning and transformation, numerical simulation, statistical modeling, data visualization, machine learning, and much more. In our case, Notebooks contain simple Python or shell or other pieces of codes to interact with the different APIs available studied in the Notebook. Instructions are provided in a [markdown](https://en.wikipedia.org/wiki/Markdown) format. We centralize the different notebooks on a single [JupyterHub](https://jupyterhub.readthedocs.io/en/stable/) server. This allows us to replicate them across the multiple students currently configured on the server fairly easily through Ansible playbooks. When changes are necessary (fixing a typo for instance in a notebook), updates can be performed quickly by just launching the playbook.
+To put it simply, a Jupyter Notebook is an open-source web application that allows you to create and share documents that contain live code, equations, visualizations and narrative text. Uses include data cleaning and transformation, numerical simulation, statistical modeling, data visualization, machine learning, and much more. In our case, Notebooks contain simple Python or shell or other pieces of codes to interact with the different APIs available studied in the Notebook. Instructions are provided in a [markdown](https://en.wikipedia.org/wiki/Markdown) format. We centralize the different notebooks on a single [JupyterHub](https://jupyterhub.readthedocs.io/en/stable/) server. This allows us to replicate them across the multiple students currently configured on the server fairly easily through [Ansible](https://en.wikipedia.org/wiki/Ansible_(software)) playbooks. When changes are necessary (fixing a typo for instance in a notebook), updates can be performed quickly by just launching the playbook.
 
 ![View of a Notebook](img/jupyterhub-notebook.png)
 
-From a course standpoint, the notebook format is a really simple and flexible solution. Students can even download the notebooks and run them locally on their laptops if they want to do them again later on or reuse some of the code for their own projects. It's also a convenient way of maintaining existing Notebooks for producers, and the simple Markdown format makes it appealing for new contriutors to add to the collection of Notebooks.
+From a course standpoint, the notebook format is a really simple and flexible solution. Students can even download the notebooks and run them locally on their laptops if they want to do them again later on or reuse some of the code for their own projects. It's also a convenient way of maintaining existing Notebooks for producers, and the simple Markdown format makes it appealing for new contributors to add to the collection of Notebooks.
 
 ## Running the Workshop on Demand
 
@@ -59,7 +59,7 @@ Once you log in, open the workshop folder on the left by double-clicking on it.
 
 ![workshop screen 2](https://hpe-developer-portal.s3.amazonaws.com/uploads/media/2020/7/workshop-screen-2-1600260642513.png)
 
-Each notebook generally has several sections. Start with the **Read Me First** and follow the instructions from there.
+Each notebook generally has several sections ordered by the initial number. Start with the **Read Me First** and follow the instructions from there.
 
 ![workshop screen 3](https://hpe-developer-portal.s3.amazonaws.com/uploads/media/2020/7/workshop-screen-3-1600260646340.png)
 
@@ -78,8 +78,3 @@ At the end of the workshop, you will receive a final email indicating that the w
 
 ![end workshop survey](https://hpe-developer-portal.s3.amazonaws.com/uploads/media/2020/7/end-workshop-survey-1600260589980.png)
 
-## How to get help
-
-To receive SME assistance through our [workshop Slack channel](https://hpedev.slack.com/archives/C01B60X8SSD), make sure you join the [workspace](https://slack.hpedev.io/). We staff the channel to answer questions between 4 am and 4 pm EST Monday through Friday. You may wish to ensure you schedule the timing of your course between those hours if you think you’ll have questions or need additional help.
-
-There will be a limited number of seats available. These seats will be filled on a first-come/first-serve basis. We look forward to the opportunity of offering these workshops to you. Remember to [check the Hack Shack workshops library](/hackshack/workshops) regularly for any further updates.
