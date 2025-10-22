@@ -10,7 +10,7 @@ What is the goal of the Workshops-on-Demand (WoD) ? Make it easy to register for
 
 The WoD infrastructure comprises 3 differents systems to work, that are usually spread across 3 machines:
  
-* a wod-backend machine, hosting the Jupyter Hub and the WoD templates to generate the real workshop that a given student will run, witth eir metadata. This machine may also intercat with appliances for WoD neededd one, such as Docker e.g. You may have multiple wod-backend in case of a large setup. Corresponding software on the repos [wod-backend](https://github.com/Workshops-on-Demand/wod-backend), [wod-notebooks templates](https://github.com/Workshops-on-Demand/wod-notebooks), [wod-private optional setup](https://github.com/Workshops-on-Demand/wod-private)
+* a wod-backend machine, hosting the Jupyter Hub and the WoD templates to generate the real workshop that a given student will run, with their metadata. This machine may also interact with appliances for WoD needing one, such as Docker e.g. You may have multiple wod-backend in case of a large setup. Corresponding software on the repos [wod-backend](https://github.com/Workshops-on-Demand/wod-backend), [wod-notebooks templates](https://github.com/Workshops-on-Demand/wod-notebooks), [wod-private optional setup](https://github.com/Workshops-on-Demand/wod-private)
 * a wod-api-db machine hosting the WoD API service and a PostgreSQL database to store live information about the running platform. Corresponding software on the repo [wod-api-db](https://github.com/Workshops-on-Demand/wod-api-db)
 * a wod-fronted machine, hosting the Web interface to see the list of available workshops and book one. Corresponding software on the repo [wod-frontend](https://github.com/Workshops-on-Demand/wod-frontend)
 
