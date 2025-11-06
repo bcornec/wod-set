@@ -41,10 +41,10 @@ Here are a series of blogs published on the [HPE Developer Community Portal](htt
 
 * 0/ [From Jupyter Notebooks-as-a-Service to HPE DEV Workshops-on-Demand](https://developer.hpe.com/blog/from-jupyter-notebooks-as-a-service-to-hpe-dev-workshops-on-demand/)
 * 1/ [Open sourcing Workshops-on-Demand part 1: Why and How](https://developer.hpe.com/blog/willing-to-build-up-your-own-workshops-on-demand-infrastructure/)
-* 2/ [Open Sourcing Workshops-on-Demand part 2: How to Deploy the infrastructure](https://developer.hpe.com/blog/open-sourcing-workshops-on-demand-part2-deploying-the-backend/)
+* 2/ [Open Sourcing Workshops-on-Demand part 2: How to Deploy the infrastructure](https://developer.hpe.com/blog/open-sourcing-workshops-on-demand-part-2-how-to-deploy-the-infrastructure/)
 * 3/ [Open Sourcing Workshops-on-Demand part 3: Understand the Backend](https://developer.hpe.com/blog/open-sourcing-workshops-on-demand-part3-understanding-the-backend/)
 * 4/ [Open Sourcing Workshops-on-Demand part 4: Manage the Backend](https://developer.hpe.com/blog/open-sourcing-workshops-on-demand-part4-managing-the-backend/)
-* 5/ Open Sourcing Workshops-on-Demand part 5: Create new workshops (To be Published)
+* 5/ [Open Sourcing Workshops-on-Demand part 5: Create new workshops](https://developer.hpe.com/blog/open-sourcing-workshops-on-demand-part-5-create-a-workshop/)
 
 You can also refer to the various presentations made on this project:
 * [LCA 2021](https://www.youtube.com/watch?v=D6Ss3T2p008)
