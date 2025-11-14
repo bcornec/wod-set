@@ -155,7 +155,7 @@ As a result of our work on that project, over the course of 2022 we started to o
 
 From a legal standpoint, we needed to go through the HPE OSRB (Open Source Review Board) to present the project that we wanted to open source. We were asked to follow a process that consisted of four steps:
 
-![HPE OSRB Process](/img/wod-osrb1.png "HPE OSRB process")
+![HPE OSRB Process](/img/wod-osrb.png)
 
 As the project did not contain any HPE proprietary software, as it is based on open source technologies like Ansible and Jupyter, the process was quite straightforward. Besides, HPE did not want to exploit commercially the generated intellectual property.  We explained to the OSRB that the new architecture of the solution would allow the administrator of the project to separate public content from private content, with private content being a proprietary technology.
 
@@ -171,11 +171,11 @@ This took us a few months and we are now ready to share with you the result of t
 
  The Workshops-on-Demand concept is fairly simple. The following picture gives you a general idea of how the process works.
 
-![Workshops-on-Demand Concepts 1](/img/wod-howto.png "Workshops-on-Demand Concepts 10000 feet view")
+![Workshops-on-Demand Concepts High Level View](/img/wod-howto.png)
 
 Now that you understand the basic principle, let's look at the details. The image below shows what happens at each stage from a protocol standpoint.
 
-![](/img/wod-protocols.png "Workshops-on-Demand Architecture and Protocols Diagram")
+![Workshops-on-Demand Architecture and Protocols Diagram](/img/wod-protocols.png)
 
 ## The Register Phase
 
@@ -187,13 +187,13 @@ As the register button is clicked, the frontend server performs a series of acti
 
 Here is a screenshot of the workshop table present in the frontend database server showing API 101 workshops details.
 
-![Workshops Table from Frontend DB server](/img/wod-db-workshop-table.png "Workshops Table from Frontend DB server")
+![Workshops Table from Frontend DB server](/img/wod-db-workshop-table.png)
 
 * Frederic Passeron gets assigned a studentid "student397" for workshop "API101".
 
   Here are the details of the participant info when registered to a given workshop.
 
-![Customers Table from Frontend DB server](/img/wod-db-customer-table.png "Customers Table from Frontend DB server")
+![Customers Table from Frontend DB server](/img/wod-db-customer-table.png)
 
 **3.** An initial email is sent to participants from the API-DB server welcoming them to the workshop and informing them that the deployment is ongoing and that a second email will arrive shortly providing the necessary information required to log onto the workshop environment.
 
