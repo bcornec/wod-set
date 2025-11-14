@@ -22,7 +22,7 @@ As you can see, moving from a heavily manually oriented approach to now a fully 
 
 Of course, as automation minded people, we could not stay like that for long, so we decided to build a framework to help us deliver more Workshops on Demand (aka WoD) and began our 5 years journey of developing it till version 1.0.0 :-)
 
-# Architecture considerations
+# Architecture and technologies considerations
 
 Soon we realized that for the project to be usable, we would need to improve various aspects. Our needs were the follwing:
 - provide a registration portal to allow workshop exposure and automated user registration. 
@@ -87,13 +87,13 @@ We created as many Git repositories as needed, for the infrastructure management
 - [wod-api-db](https://github.com/Workshops-on-Demand/wod-api-db) for the REST API and PostgreSQL DB
 - [wod-backend](https://github.com/Workshops-on-Demand/wod-backend) for the JupyterHub
 - [wod-notebooks](https://github.com/Workshops-on-Demand/wod-notebooks) for the Notebooks provided
-- [wod-private](https://github.com/Workshops-on-Demand/wod-private) as a template fo using a private setup alongside the public one.
+- [wod-private](https://github.com/Workshops-on-Demand/wod-private) as a template for using a private setup alongside the public one.
 - [wod-install](https://github.com/Workshops-on-Demand/wod-install) for the installation of the infrastructure
 - [wod-doc](https://github.com/Workshops-on-Demand/.github) for the project documentation (you're on it !)
 
 # How it works
 
-Let me first show you how the overall process works for our Workshops-on-Demand:
+Let us first show you how the overall process works for our Workshops-on-Demand:
 
 ![Workshops-on-Demand principles](img/wod-principles.png)
 
@@ -133,7 +133,7 @@ At the end of this automated process, the backend makes a series of API calls to
 
 # A bit of background
 
-This solution allows us to deliver free hands-on workshops. It has been used during events, (HPE Discover, HPE TSS, as well as Open Source Summit, KubeCon), and during training sessions (HPE trainings, RMLL, Campus Numérique, ...) to promote API/automation-driven solutions along with some 101-level coding courses.
+This solution allows us to deliver free hands-on workshops. It has been used during events (HPE Discover, HPE TSS, as well as Open Source Summit, KubeCon), and during training sessions (HPE trainings, RMLL, Campus Numérique, ...) to promote API/automation-driven solutions along with some 101-level coding courses.
 
 If you are interested in creating your own training architecture to deliver workshops, this project is definitely for you. It would allow you to create, manage content and deliver it in an automated and very efficient way. Once ready, the infrastructure can deliver workshops in matter of minutes!
 
@@ -147,11 +147,11 @@ Secondly, the project is based on open source technologies like Jupyter and Ansi
 
 We have, actually, shared the fundamentals of the project thoughout the HPE Developer Community, and to a wider extent, the Open Source Community  through different internal and external events. And the feedback has always been positive. Some people found the project very appealing. Originally, and long before even thinking of open sourcing the project, when we really started the project development, people were mainly interested in the content and not necessarily in the infrastructure. The students wanted to be able to reuse some of the notebooks. And in a few cases, they also asked for details about the infrastructure itself, asking about the notebooks delivery mechanism and other subjects like the [procmail API](https://www.youtube.com/watch?v=zZm6ObQATDI).
 
-Early last year, we were contacted by an HPE colleague who was willing to replicate our setup in order to deliver notebooks to its AI/ML engineers. His aim was to provide a simple, central point from which he could deliver Jupyter Notebooks, that would later be published on the Workshops-on-Demand infrastructure frontend portal, allowing content to be reused and shared amongst engineers. While, over time, we had worked  a lot on automating content delivery and some parts of the infrastructure setup, we needed now to rework and package the overall solution to make it completely open source and reusable by others.
+In 2022, we were contacted by an HPE colleague who was willing to replicate our setup in order to deliver notebooks to its AI/ML engineers. His aim was to provide a simple, central point from which he could deliver Jupyter Notebooks, that would later be published on the Workshops-on-Demand infrastructure frontend portal, allowing content to be reused and shared amongst engineers. While, over time, we had worked  a lot on automating content delivery and some parts of the infrastructure setup, we needed now to rework and package the overall solution to make it completely open source and reusable by others.
 
 As a result of our work on that project, over the course of 2022 we started to open source the Workshops-on-Demand program. As a project developed within the confiines of Hewlett Packard Enterprise (HPE), we had a number of technical, branding, and legal hurdles we needed to overcome in order to achieve this.
 
-#### Legal side of things
+### Legal side of things
 
 From a legal standpoint, we needed to go through the HPE OSRB (Open Source Review Board) to present the project that we wanted to open source. We were asked to follow a process that consisted of four steps:
 
@@ -161,27 +161,23 @@ As the project did not contain any HPE proprietary software, as it is based on o
 
 This had a huge influence on the future architecture of the project that originally did not allow it. In our case, for instance, any workshop related to an HPE technology like  HPE Ezmeral, would fall into the private part of the project, and therefore, would not appear on the public github repository that we had to create for the overall project distribution.
 
-#### Technical side of things
+### Technical side of things
 
 From a technical standpoint, as mentioned above, we had to make sure to separate the public only content from any possible private content. We started by sorting the different workshops (public vs private based). We also had to sort the related scripts that come along with the workshops. Going through this process, we found out that some of the global scripts had to be reworked as well to support any future split of public and private content. Similarly, we had to address any brand specifics, parameterizing instead of hardcoding variables as it was in the first version.
 
-This took us a few months and we are now ready to share with you the result of this work. In this first blog, I will focus on the architecture side of the Workshops-on-Demand project. 
+This took us a few months and we are now ready to share with you the result of this work. We will now focus on the architecture side of the Workshops-on-Demand project. 
 
-Further blog articles will help you setup your own architecture.
-
-## The How
-
-## Understand the architecture first
+# The WoD Architecture
 
  The Workshops-on-Demand concept is fairly simple. The following picture gives you a general idea of how the process works.
 
-![Workshops-on-Demand Concepts 1](/img/howto-wod-6.png "Workshops-on-Demand Concepts 10000 feet view")
+![Workshops-on-Demand Concepts 1](/img/wod-howto.png "Workshops-on-Demand Concepts 10000 feet view")
 
 Now that you understand the basic principle, let's look at the details. The image below shows what happens at each stage from a protocol standpoint.
 
-![](/img/howto-wod-10.png "Workshops-on-Demand Architecture Diagram")
+![](/img/wod-protocols.png "Workshops-on-Demand Architecture and Protocols Diagram")
 
-### The Register Phase
+## The Register Phase
 
 **1.** Participants start by browsing a frontend web server that presents the catalog of available workshops. They then select one and register for it by entering their email address, first and last names, as well as their company name. Finally, they accept the terms and conditions and hit the register button. 
 
@@ -191,73 +187,73 @@ As the register button is clicked, the frontend server performs a series of acti
 
 Here is a screenshot of the workshop table present in the frontend database server showing API 101 workshops details.
 
-![Workshops Table from Frontend DB server](/img/howto-wod-2.png "Workshops Table from Frontend DB server")
+![Workshops Table from Frontend DB server](/img/wod-db-workshop-table.png "Workshops Table from Frontend DB server")
 
 * Frederic Passeron gets assigned a studentid "student397" for workshop "API101".
 
-  H﻿ere are the details of the participant info when registered to a given workshop.
+  Here are the details of the participant info when registered to a given workshop.
 
-![Customers Table from Frontend DB server](/img/howto-wod-3.png "Customers Table from Frontend DB server")
+![Customers Table from Frontend DB server](/img/wod-db-customer-table.png "Customers Table from Frontend DB server")
 
-**3.** An initial email is sent to participants from the frontend server welcoming them to the workshop and informing them that the deployment is ongoing and that a second email will arrive shortly providing the necessary information required to log onto the workshop environment.
+**3.** An initial email is sent to participants from the API-DB server welcoming them to the workshop and informing them that the deployment is ongoing and that a second email will arrive shortly providing the necessary information required to log onto the workshop environment.
 
-**4.** At the same time, the frontend server sends the necessary orders through a procmail API call to the backend server. The mail sent to the backend server contains the following details:
+**4.** At the same time, the API-DB server sends the necessary orders through a procmail API call to the backend server. The mail sent to the backend server contains the following details:
 
-* Action Type ( CREATE, CLEANUP, RESET)
+* Action Type ( CREATE, CLEANUP, RESET, PURGE)
 * Workshop ID
 * Student ID
 
-**5.** The backend server recieves the order and processes it by parsing the email recieved using the procmail API. the procmail API automates the management of the workshops.
+**5.** The backend server recieves the order and processes it by parsing the email recieved using the procmail API. The procmail API automates the management of the workshops.
 
 Like any API, it uses verbs to perform tasks.
 
 * CREATE to deploy a workshop
 * CLEANUP to delete a workshop
 * RESET to reset associated workshop's resource
+* PURGE to delete workshop and reset associated workshop's resource
 
 **CREATE subtasks:**
 
 * **6.** It prepares any infrastructure that might be required for the workshop (Virtual Appliance, Virtual Machine, Docker Container, LDAP config, etc.).
 * It generates a random Password for the allocated student.
 * It deploys the workshop content on the jupyterhub server in the dedicated student home directory (Notebooks files necessary for the workshops).
-* **7.** It sends back the confirmation of the deployment of the workshop, along with the student's required details (i.e password), through API Calls to the frontend server.
+* **7.** It sends back the confirmation of the deployment of the workshop, along with the student's required details (i.e password), through API Calls to the API-DB server.
 
 **8.** The frontend server tables will be updated in the following manner:
 
 * The customers table shows an active status for the participant row. The password field has been updated.
-* The workshop table also gets updated. The capacity field decrements the number of available seats.
-* The student tables gets updated as well by setting the allocated student to active
+* The workshops table also gets updated. The capacity field decrements the number of available seats.
+* The students tables gets updated as well by setting the allocated student to active
 
-**9.** The frontend server sends the second email to each participant providing them with the details to connect to the workshop environment.
+**9.** The API-DB server sends the second email to each participant providing them with the details to connect to the workshop environment.
 
-### The Run Phase
+## The Run Phase
 
-**10.** From the email, the particpant clicks on the start button. it will open up a browser to the JupyterHub server and directly open the readme first notebook, presenting the workshop's flow.
+**10.** From the email, the particpant clicks on the start button. It will open up a browser to the JupyterHub server and directly open the readme first file of the notebook, presenting the workshop's flow.
 
 Participants will go through the different steps and labs of the workshop connecting to the necessary endpoints and leveraging the different kernels available on the JupyterHub server.
 
-Meanwhile, the frontend server will perform regular checks on how much time has passed. Depending on the time allocation (from 2 to 4 hours) associated with the workshop, the frontend server will send a reminder email usually a hour before the end of the time allocated. The time count actually starts when participants hit the register for the workshop button. It is mentioned in the terms and conditions.
+Meanwhile, the API-DB server will perform regular checks on how much time has passed. Depending on the time allocation (from 2 to 4 hours) associated with the workshop, the API-DB server will send a reminder email usually an hour before the end of the time allocated. The time count actually starts when participants hit the register for the workshop button. It is mentioned in the terms and conditions.
 
-Finally, when the time is up, the frontend server sends a new order to the backend to perform either CLEANUP or RESET action for the dedicated studentid.
+Finally, when the time is up, the API-DB server sends a new order to the backend to perform either CLEANUP and/or RESET action for the dedicated studentid.
 
 **RESET subtasks:**
+TODO: document CLEANUP and PURGE here as well
 
 * It resets any infrastructure that was required for the workshop (Virtual Appliance, Virtual Machine, Docker Container, LDAP config, etc..).
 * It generates a random password for the allocated student.
 * It deletes the workshop content on the JupyterHub server in the dedicated student home directory (Notebooks files necessary for the workshop).
-* It sends back the confirmation of the CLEANUP or RESET of the workshop along with the student details (i.e password) through API Calls to the frontend server.
+* It sends back the confirmation of the CLEANUP or RESET of the workshop along with the student details (i.e password) through API Calls to the API-DB server.
 
-The frontend server tables will be updated in the following manner:
+The API-DB server tables will be updated in the following manner:
 
 * The customers table will show an inactive status for the participant row. The password field has been updated. 
-* The Workshop table gets also updated. The capacity field increment the number of available seats. 
-* The student tables gets updated as well by setting the allocated student to inactive.
-* The frontend sends the final email to the participant.
+* The workshops table gets also updated. The capacity field increment the number of available seats. 
+* The students tables gets updated as well by setting the allocated student to inactive.
+* The API-DB sends the final email to the participant.
 
-### The React and Reward Phase:
+## The React and Reward Phase:
 
-* A final email thanks the students for their participation. It provides a link to an external survey and encourages the participants to share their achievement [badge](https://developer.hpe.com/blog/become-a-legend/) on social media like linkedin or twitter.
+* A final email thanks the students for their participation. It provides a link to an external survey and encourages the participants to share their achievement [badge](ADMIN-GUIDE.md#Badges) on social media like linkedin or twitter.
 
-  Et voila! [](https://developer.hpe.com/blog/become-a-legend/)
-
-With this very first article, I wanted to set the stage for the following articles where I will explain how to setup your own Workshops-on-Demand infrastructure. We will start by looking at the "JupyterHub" side of things. I will detail how to set it up depending on your use case (Public only vs Public and Private). Then, I will move to the workshop development part; from the notebook development to the automation that needs to come along with it in order to be properly integraged into the overall solution. Finally, the last article will cover the frontend's side. It will show you how to deploy it and more. I may also cover the appliance management aspect in another dedicated article.
+  Et voila!
