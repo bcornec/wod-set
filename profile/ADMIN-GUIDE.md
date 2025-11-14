@@ -264,23 +264,19 @@ The overall infrastructure can run on physical servers or Virtual Machines. We u
 
 ![WoD Infrastucture](img/wod-infra-open-source.png "WoD Infrastucture")
 
-## How to deploy your own Workshops-on-Demand infrastructure...
+The project is split into multiple repositories. The project admins will need to decide whether they are willing to develop and propose public-only content to the participants (in which case, the standard environment is sufficient) or add any proprietary and private content (in which case a bit more work is required).
 
-As explained in the previous [article](https://developer.hpe.com/blog/willing-to-build-up-your-own-workshops-on-demand-infrastructure/), the project is split into multiple repositories from the architectural and public / private aspects. Since the publication if of the previous article, additionnal repositories showed up as the installation process evolved over time. The architecture is divided between the frontend, api-db, and backend. The project admins will need to decide whether they are willing to develop and propose public-only content to the participants or add any proprietary and private content.
+We will start with the simpliest scenario: A public-only approach. Then we will dive into the specificities related to the private approach, which will require the reading of the public-only approach anyway.
 
-I will start with the simpliest scenario: A public-only approach. Then we will dive into the specificities related the private approach.
+## Public-only Deployment: No private backend nor private workshops
 
-### Public-only Deployment: No private backend nor private workshops
-
-**Important Note:**  
-
-**This part is compulsory for any type of deployment. Public only or public + private.**
+**Important Note:**  *This part is compulsory for any type of deployment, public only or public+private.*
 
 First, you need a repository to clone. The Workshops-on-Demand GitHub projects can be found [here](https://github.com/Workshops-on-Demand/). We have packaged the solution in several Github repos. Each repository handles a specific role in the overall architecture.
 
 Here's a quick look at what can be found in each:
 
-![](/img/wod-repository-2025.png "WOD Repositories")
+![WoD Repositories](img/wod-repository.png "WoD Repositories")
 
 **[wod-notebooks](https://github.com/Workshops-on-Demand/wod-notebooks):** Public Workshops-on-Demand based on Jupyter Notebooks.
 
@@ -306,9 +302,9 @@ Here's a quick look at what can be found in each:
 
 * This provide examples for creating your own cutomization layer on top of the public standard WoD Backend / wod Notebooks content. Do not put any confidential data here as this is a public repository!
 
-**Note**: There are now 9 repositories available for now. 
+**Note**: There are 9 repositories available for now. 
 
-![](/img/wod-blogserie2-2repos.png "Workshops-on-Demand repositories")
+![](img/wod-blogserie2-2repos.png "Workshops-on-Demand repositories")
 
 It provides:
 
@@ -1261,7 +1257,7 @@ If you take a look at the file structure of the `wod-backend` directory, you wil
 
 Simple tree view of the wod-backend directory:
 
-![](/img/wod-blogserie2-tree1.png "Tree view of wod-backend directory")
+![](img/wod-blogserie2-tree1.png "Tree view of wod-backend directory")
 
 The `ansible` folder contains all the necessary playbooks and variables files to support the main functions of the backend server. It provides playbooks for a minimal installation of the servers or appliances. It also allows the setup of the different types of servers (i.e backend, frontend, and/or api-db), appliances (virtual machines or containers), or workshops as well as maintenance tasks.
 
@@ -1300,7 +1296,7 @@ As part of the refactoring work to open source the project, we reaaranged the di
 
 We separated the workshops' related scripts from the system ones. When one creates a workshop, one needs to provide a series of notebooks and in some cases some scripts to manage the creation and setup of a related appliance along with additional scripts to manage its lifecycle in the overall Workshops-on-Demand architecture (Create, Cleanup, Reset scripts at deployment or Cleanup times). These scripts need to be located in the `scripts` folder. On the other hand, the system scripts are located in the `sys` folder.
 
-![](/img/tree-wkshop2.png "Tree view of the sys directory")
+![](img/tree-wkshop2.png "Tree view of the sys directory")
 
 This directory hosts important configuration files for both the system and JupyterHub. You can see for instance `fail2ban` configuration files. Some Jinja templates are present here, too. These templates will be expanded through the `deliver` mechanism allowing the creation of files customized with Ansible variables. All the wod related tasks are prefixed with wod for better understanding and ease of use.
 
@@ -1490,7 +1486,7 @@ In this article that is part of our series dedicated on [open sourcing of our Wo
 
 Let's start with a simple flowchart describing the 10000-foot view of the creation process:
 
-![](/img/wod-b-process.png "Workshop's creation flow.")
+![](img/wod-b-process.png "Workshop's creation flow.")
 
 As you can see, there's no rocket science here. Just common sense. Depending on the workshop you wish to create, some obvious requirements should show up. A workshop based on a programmatic language, for instance, may require the relevant kernel to be set up on the JupyterHub server. The following [page](https://gist.github.com/chronitis/682c4e0d9f663e85e3d87e97cd7d1624) lists all available kernels.
 
@@ -1509,7 +1505,7 @@ When the HPE Developer Community began implementing their Workshop-on-Demand pro
 
 In this post, I won't focus on the subject selection process. I'll leave that to you to figure it out. I will, however, talk a little bit again about the infrastructure, especially the dedicated scripts and variables that you need to create to support the lifecycle of the workshop. As usual, there are two sides to the workshop's creation--what should be done on the backend and what needs to be done mainly for the api db server.
 
-![](/img/wod-blogserie3-archi3.png "WOD Overview.")
+![](img/wod-blogserie3-archi3.png "WOD Overview.")
 
 ## What is a workshop? What do you need to develop?
 
@@ -1562,15 +1558,15 @@ duration: 4
 alternateLocation: ['fully qualified domain name of an alternate JupyterHub server']
 presenter: 'Matthew Doddler'
 role: 'FullStack developer'
-avatar: '/img/SpeakerImages/MattD.jpg'
+avatar: 'img/SpeakerImages/MattD.jpg'
 replayLink: 'https://hpe-developer-portal.s3.amazonaws.com/Workshops-on-Demand-Coming-Soon-Replay.mp4'
 ```
 
 The following file will be used to update the **workshops table** in the database. Let's have a look at what a new entry could look like:
 
-![](/img/wod-db-go-1.png "GO 101 Workshop DB screenshot")
+![](img/wod-db-go-1.png "GO 101 Workshop DB screenshot")
 
-![](/img/wod-db-go-2.png "GO 101 Workshop DB screenshot")
+![](img/wod-db-go-2.png "GO 101 Workshop DB screenshot")
 
 As a contributor, Matt should be able to provide all the following details.
 
