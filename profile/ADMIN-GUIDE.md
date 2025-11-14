@@ -257,11 +257,12 @@ The API-DB server tables will be updated in the following manner:
 * A final email thanks the students for their participation. It provides a link to an external survey and encourages the participants to share their achievement [badge](ADMIN-GUIDE.md#Badges) on social media like linkedin or twitter.
 
   Et voila!
-In the first [article](https://developer.hpe.com/blog/willing-to-build-up-your-own-workshops-on-demand-infrastructure/) of this series, I described the reasons behind the decision to open source our Workshops-on-Demand (WoD) project and gave you a comprehensive picture of the project's overall infrastructure. In this second article, I will explain how to deploy it.
 
-The overall infrastructure can run on physical servers or Virtual Machines. We usually designate one server for the frontend and a second server for the backend. You could also decide to separate every single component of each side.
+# Deploying the infrastructure
 
-![](/img/howto-wod-5.png "wod infrastucture")
+The overall infrastructure can run on physical servers or Virtual Machines. We usually designate one server for the frontend, one for the API-DB and PostgreSQL DB and a third (or more) server for the backend.
+
+![WoD Infrastucture](img/wod-infra-open-source.png "WoD Infrastucture")
 
 ## H﻿ow to deploy your own Workshops-on-Demand infrastructure...
 
