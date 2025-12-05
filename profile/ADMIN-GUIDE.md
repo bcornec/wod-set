@@ -50,12 +50,12 @@ We quickly chose the various tools that will help us manage this efficiently:
 
 From an architecture perspective, we rapidly agreed that we would need multiple machines/services:
 ![Multiple servers/services](img/wod-infra-open-source.png "Multiple servers/services")
-- A frontend server to manage he workshop list and allow user registration
+- A frontend server to manage the workshop list and allow user registration
 - An API server coupled with the Database to orchestrate the platform
 - A backend server on which will run the JupyterHub service and where the Notebooks will be deployed
 - Appliances servers running the technology at work in the Notebook (optional)
 
-For our automation, we have playbooks that would perform:
+For our automation, we have Ansible playbooks that would perform:
 - Server configuration (based on an existing deployed Operating System with just git installed) including:
     - Repository Update
     - Apps Installation
@@ -65,6 +65,8 @@ For our automation, we have playbooks that would perform:
         - JupyterHub application installation and configuration
         - Linux students creation
         - JupyterHub users creation
+        - A complete JupyterHub server preinstalled and configured with some additional Jupyterhub kernels
+        - A postfix server used for the procmail API 
     - on frontend:
          - Javascript setup with npm
          - portal installation and launch
@@ -75,21 +77,26 @@ For our automation, we have playbooks that would perform:
 - Server conformity management (run after the previous playbook and on demand and nightly to ensure that the configuration is consistent and up to date):
     - System Update
     - Security Setup
-    - Services Conformity and check
+    - Services Conformity and check (apps, users)
     - Templating of configration and data files
+    - A fail2ban service  to limit abuses
+    - An Admin user to manage everything 
 - Notebooks deployment on the JupyterHub server:
     - Templating the Notebook and data files
     - Security setup
 
+
 We created as many Git repositories as needed, for the infrastructure management:
 ![WoD repositories](img/wod-repositories.png "WoD repositories")
-- [wod-frontend](https://github.com/Workshops-on-Demand/wod-frontend) for the portal
-- [wod-api-db](https://github.com/Workshops-on-Demand/wod-api-db) for the REST API and PostgreSQL DB
-- [wod-backend](https://github.com/Workshops-on-Demand/wod-backend) for the JupyterHub
-- [wod-notebooks](https://github.com/Workshops-on-Demand/wod-notebooks) for the Notebooks provided
-- [wod-private](https://github.com/Workshops-on-Demand/wod-private) as a template for using a private setup alongside the public one.
-- [wod-install](https://github.com/Workshops-on-Demand/wod-install) for the installation of the infrastructure
+- [wod-frontend](https://github.com/Workshops-on-Demand/wod-frontend) for the WoD portal based on NGINX and NodeJS technologies, it provides the participtants' Registration Portal used to enable booking of the workshops.
+- [wod-api-db](https://github.com/Workshops-on-Demand/wod-api-db) for the REST Open API 3.0 based API and a PostgreSQL DB hosting the different status of participants, workshops, and students. 
+- [wod-backend](https://github.com/Workshops-on-Demand/wod-backend) for the JupyterHub and Postfix mail server.
+- [wod-notebooks](https://github.com/Workshops-on-Demand/wod-notebooks) for the public Jupyter based Notebooks provided. You can test them live at <https://hackshack.hpedev.io/workshops>
+- [wod-private](https://github.com/Workshops-on-Demand/wod-private) as a template for using a WoD private setup alongside the public one, including a cutomization layer on top of the public standard WoD Backend / WoD Notebooks content. Do not put any confidential data here as this is a public repository!
+- [wod-install](https://github.com/Workshops-on-Demand/wod-install) for the installation of the WoD infrastructure, allowing you to install either Backend, API-DB or Frontend servers using a single line of command.
 - [wod-doc](https://github.com/Workshops-on-Demand/.github) for the project documentation (you're on it !)
+
+**Note**: There are 7 repositories available for now. 
 
 # How it works
 
@@ -238,7 +245,7 @@ Meanwhile, the API-DB server will perform regular checks on how much time has pa
 Finally, when the time is up, the API-DB server sends a new order to the backend to perform either CLEANUP and/or RESET action for the dedicated studentid.
 
 **RESET subtasks:**
-TODO: document CLEANUP and PURGE here as well
+[//]: # (TODO: document CLEANUP and PURGE here as well)
 
 * It resets any infrastructure that was required for the workshop (Virtual Appliance, Virtual Machine, Docker Container, LDAP config, etc..).
 * It generates a random password for the allocated student.
@@ -274,63 +281,15 @@ We will start with the simpliest scenario: A public-only approach. Then we will 
 
 First, you need a repository to clone. The Workshops-on-Demand GitHub projects can be found [here](https://github.com/Workshops-on-Demand/). We have packaged the solution in several Github repos. Each repository handles a specific role in the overall architecture.
 
-Here's a quick look at what can be found in each:
-
-![WoD Repositories](img/wod-repository.png "WoD Repositories")
-
-**[wod-notebooks](https://github.com/Workshops-on-Demand/wod-notebooks):** Public Workshops-on-Demand based on Jupyter Notebooks.
-
-* You can test them live at <https://hackshack.hpedev.io/workshops>
-
-**[wod-install](https://github.com/Workshops-on-Demand/wod-install):** Installer part of the Workshops-on-Demand project.
-
-**[wod-backend](https://github.com/Workshops-on-Demand/wod-backend):** Back-end part of our Workshops-on-Demand setup. 
-
-**[wod-frontend](https://github.com/Workshops-on-Demand/wod-frontend):** Frontend part of the Workshops-on-Demand project.
-
-* Based on NGINX and NodeJS technologies, it provides the participtants' Registration Portal used to enable booking of the workshops.
-
-**[wod-api-db](https://github.com/Workshops-on-Demand/wod-api-db):** Workshops-on-Demand registration portal application
-
-* Open API 3.0 based api used to manage the Workshops-on-Demand project. It also provides a database hosting the different status of participants, workshops, and students. 
-
-**[wod-private](https://github.com/Workshops-on-Demand/wod-private):** Example Private configuration for Workshops-on-Demand (WoD).
-
-**[wod-frontend-private](https://github.com/Workshops-on-Demand/wod-frontend-private):** Private Frontend part of the Workshops-on-Demand project.
-
-**[wod-api-db-private](https://github.com/Workshops-on-Demand/wod-api-db-private):** Workshops-on-Demand registration portal application
-
-* This provide examples for creating your own cutomization layer on top of the public standard WoD Backend / wod Notebooks content. Do not put any confidential data here as this is a public repository!
-
-**Note**: There are 9 repositories available for now. 
-
-![](img/wod-blogserie2-2repos.png "Workshops-on-Demand repositories")
-
-It provides:
-
-* An Installer allowing you to install either Backend, Api-DB server, or Frontend using a single line of command.
-* A complete JupyterHub server with some addons (additional Jupyterhub kernels, Ansible galaxies, and PowerShell libraries) on your system, ready to host Workshops-on-Demand that you can find here. 
-* A postfix server used for the procmail API 
-* An Ansible engine to allow automation 
-* A fail2ban service 
-* An Admin user to manage everything 
-* A set of scripts to handle different tasks such as: 
-
-  * Notebooks deployment
-  * Jupyterhub compliancy
-  * Users compliancy
-  * Security Management
-  * Workshops updates
-
 ### Backend server preparation:
 
-The installation process is handled by a dedicated repo : [wod-install](https://github.com/Workshops-on-Demand/wod-install). This repo needs to be cloned on every single machine  constituting the wod architecture. Before cloning the wod-install repository, you will need to prepare the server that will host the backend features. When ready, you will proceed with the cloning and then the installation process.
+The installation process is handled by a dedicated repo : [wod-install](https://github.com/Workshops-on-Demand/wod-install). This repo needs to be cloned on every single machine  constituting the WoD architecture. Before cloning the `wod-install` repository, you will need to prepare the server that will host the backend features. When ready, you will proceed with the cloning and then the installation process.
 
 #### Prerequesites:
 
 In order to setup the backend server, you will need:
 
-* A fresh OS install on physical / virtualized server running Ubuntu 24.04 or Centos 7.9 leveraging any deployment mechanism of your choice.(e.g. iLO, vagrant, etc.). You may even use this vagrant file to automatically generate a complete setup leveraging vagrant, libvirt and QEMU/KVM. 
+* A fresh minimal OS install on physical/virtualized server running Ubuntu 24.04 leveraging any deployment mechanism of your choice.(e.g. through [iLO](https://en.wikipedia.org/wiki/HPE_Integrated_Lights-Out), automatic installation with [preseed](https://wiki.debian.org/DebianInstaller/Preseed), [virt-lightning](https://github.com/virt-lightning/virt-lightning), etc...).
 * A Linux account with sudo priviledges on your Linux distro. Name it `install`   
 
 **Note**: In order to support 100 concurrent users, you need:    
@@ -339,11 +298,11 @@ In order to setup the backend server, you will need:
 * 128 GB of RAM 
 * 500 GB of storage 
 
-We are currently using an HPE ProLiant DL360 Gen10 server on our different production sites.
+We are currently using an either an ProLiant DL360 Gen10 server on our different production sites or QEMU/VMWare VMs on test sites.
 
 When done with OS installation and preparation
 
-* From the WoD-backend server (aka JupyterHub server), as the install user, you will need to clone the wod-install repo first.
+* From the WoD-backend server (aka JupyterHub server), as the install user, you will need to clone the `wod-install` repo first.
 
 ```shellsession
 install$ git clone https://github.com/Workshops-on-Demand/wod-install.git
@@ -352,7 +311,7 @@ install$ cd wod-install/
 
 * Examine default installation parameters and adapt when necessary accordingly. Files are self-documented.
 
-Look at the following files within ansible/group_vars directory.    
+Look at the following files within `ansible/group_vars` directory.    
 
 * `all.yml` file  
 
@@ -1298,7 +1257,7 @@ We separated the workshops' related scripts from the system ones. When one creat
 
 ![](img/tree-wkshop2.png "Tree view of the sys directory")
 
-This directory hosts important configuration files for both the system and JupyterHub. You can see for instance `fail2ban` configuration files. Some Jinja templates are present here, too. These templates will be expanded through the `deliver` mechanism allowing the creation of files customized with Ansible variables. All the wod related tasks are prefixed with wod for better understanding and ease of use.
+This directory hosts important configuration files for both the system and JupyterHub. You can see for instance `fail2ban` configuration files. Some Jinja templates are present here, too. These templates will be expanded through the `deliver` mechanism allowing the creation of files customized with Ansible variables. All the WoD related tasks are prefixed with WoD for better understanding and ease of use.
 
 These Jinja templates can refer to some JupyterHub kernel needs like `wod-build-evcxr.sh.j2` that aims at creating a script allowing the rust kernel installation. Some other templates are related to the system and JupyterHub. `wod-kill-processes.pl.j2` has been created after discovering the harsh reality of online mining. In a ideal world, I would not have to explain further as the script would not be needed. Unfortunately, this is not the case. When one offers access to some hardware freely online, sooner or later, he can expect to  see his original idea to be hyjacked.
 
@@ -1430,7 +1389,7 @@ On a daily basis, some tasks are launched to check the integrity of the backend 
 
 It checks a quite long list of items like:
 
-* Wod System compliancy: is this really a wod system? by calling out [check_system.yml](https://github.com/Workshops-on-Demand/wod-backend/blob/main/ansible/check_system.yml) playbook. 
+* Wod System compliancy: is this really a WoD system? by calling out [check_system.yml](https://github.com/Workshops-on-Demand/wod-backend/blob/main/ansible/check_system.yml) playbook. 
 
 This first check includes:  
 
