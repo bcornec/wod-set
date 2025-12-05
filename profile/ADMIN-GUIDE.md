@@ -571,7 +571,7 @@ Please refer to the following [url](https://docs.github.com/en/authentication/ke
 
 * Edit the `install.priv` file located in `install` directory of wod-install:  
   * Create a line before variable declaration reading ``token=`cat $EXEPATH/token` ``    
-  * Use the token in the url WODPRIVREPO="git clone https://user:$token@github.com/Account/wod-private.git wod-private" to take advantage of it.
+  * Use the token in the url `WODPRIVREPO="git clone https://user:$token@github.com/Account/wod-private.git wod-private"` to take advantage of it.
 
 You are now ready to perform the installation again to support a private repository.
 
@@ -579,222 +579,189 @@ Please note that this setup phase can be concurrent with the public setup phase.
 
 Also note that if you use a different branch than the standard one (main usually), you can use additional variables in the `install.priv` file to overwrite the branch with the name you use instead. After the clone you'll then point to the right branch.
 
-You now have a working Workshops-on-Demand backend server in place. Congratulations! NOw we have to look at the lifecycle of the backend server. How does a workshop registration work from the backend server 's side? How do you manage this server on a daily basis? How and when do you need to update it ? This is explained in the next paragraphs.
+You now have a working Workshops-on-Demand backend server in place. Congratulations! Now we have to look at the lifecycle of the backend server. How does a workshop registration work from the backend server side? How do you manage this server on a daily basis? How and when do you need to update it ? This is explained in the next paragraphs.
 
 ## Workshops deployment lifecycle
 
 The following picture depicts what happens on the backend server when a participant registers for a workshop. If you remember from the first article, upon registration the frontend sends instructions to the backend server through a procmail API call so the latter can proceed with the workshop preparation and deployment. Once these tasks are completed, it provides the API-DB server with the relevant information
 
 Let's now look in details what is really happening on the backend server's side:
-[cid:image003.png@01DC3DC6.A29E6220]
+![WoD backend deployment lifecycle](img/wod-backend-lifecycle.png "WoD backend deployment lifecycle")
 
-0- The procmail API: This is a mail parsing process allowing the backend server to retrieve the relevant information in order to perform appropriate actions. As with any API, it uses verbs to perform actions. In our case, we leverage CREATE, CLEANUP, RESET and PURGE.
+0. The procmail API: This is a mail parsing process allowing the backend server to retrieve the relevant information in order to perform appropriate actions. As with any API, it uses verbs to perform actions. In our case, we leverage CREATE, CLEANUP, RESET and PURGE.
 
-If you need more info on procmail usage, check this page<https://wiki.archlinux.org/title/Procmail%3E>.
+You can get more info on [procmail](https://fr.wikipedia.org/wiki/Procmail) usage, on [this page](https://wiki.archlinux.org/title/Procmail).
 
 Take a look at the following template of the .procmailrc file that will be expanded at setup time.
 
+```
+cat wod-backend/sys/procmailrc.j2
 MAILDIR=$HOME/.mail      # You'd better make sure it exists
-
 DEFAULT=$MAILDIR/mbox
-
 LOGFILE=$MAILDIR/from
 
-
-
 :0b
-
 #* ^From.*{{ WODSENDER }}.*
-
 # \/ defines what will be matched in $MATCH
-
 * ^Subject: *CREATE \/[1-9]+.*
-
-| {{ SCRIPTDIR }}/procmail-action.sh CREATE $MATCH
-
-
+| {{ WODSCRIPTDIR }}/procmail-action.sh CREATE $MATCH
 
 :0b
-
 #* ^From.*{{ WODSENDER }}.*
-
 # \/ defines what will be matched in $MATCH
-
 * ^Subject: *CLEANUP \/[1-9]+.*
-
-| {{ SCRIPTDIR }}/procmail-action.sh CLEANUP $MATCH
-
-
+| {{ WODSCRIPTDIR }}/procmail-action.sh CLEANUP $MATCH
 
 :0b
-
 #* ^From.*{{ WODSENDER }}.*
-
 # \/ defines what will be matched in $MATCH
-
 * ^Subject: *RESET \/[1-9]+.*
-
-| {{ SCRIPTDIR }}/procmail-action.sh RESET $MATCH
-
-
+| {{ WODSCRIPTDIR }}/procmail-action.sh RESET $MATCH
 
 :0b
-
 #* ^From.*{{ WODSENDER }}.*
-
 # \/ defines what will be matched in $MATCH
+* ^Subject: *PURGE \/[1-9]+.*
+| {{ WODSCRIPTDIR }}/procmail-action.sh PURGE $MATCH
+```
 
-* ^Subject: *PURGE student\/[1-9]+.*
+The From: is important as .procmailrc checks that the sender is the one configured during the installation (`-s` option of the install.sh script). Any mail from any other sender but the configured one is not processed.
 
-| {{ SCRIPTDIR }}/procmail-action.sh PURGE $MATCH
+This API is actually based on a script procmail-action.sh, which defines the different operations linked to the verbs passed through the API calls via .procmailrc
 
-The From: is important as .procmailrc checks that the sender is the configured one from the frontend server. During the install process, the WODSENDER parameter ID referring to this. Any mail from any other sender but the configured one is not processed.
+Let's start with a CREATE scenario looking at the very first lines of the procmail log file (in `~wodadmin/.mail/from`).
 
-This API is actually based on a script procmail-action.sh. This script defines the different actions linked to the verbs passed through the API calls via .procmailrc
-
-Let's start with a CREATE scenario looking at the very first lines of the procmail log file.
-
+```
 From xyz@hpe.com<mailto:xyz@hpe.com>  Wed Mar  1 15:10:41 2023
-
-Subject: CREATE 401 825 frederic.passeron@hpe.com<mailto:frederic.passeron@hpe.com>
-
+Subject: CREATE 401 825 frederic.passeron@hpe.com
 Folder: /home/wodadmin/wod-backend/scripts/procmail-action.sh CREATE       14
+```
 
-In Subject:, look for the API verb CREATE followed by student id, participant id and finally the registered participant email.
+In Subject:, look for the API verb CREATE followed by the 3 parameters student id (401), participant id (825) and finally the registered participant email (frederic.passeron@hpe.com). These 3 parameters are passed to the procmail-action.sh after the verb for processing.
 
-Here are the values respectively:
+In order to work properly, procmail-action.sh sources 3 files:
 
-  *   student id: 401
-  *   participant id: 825
-  *   participant email: frederic.passeron@hpe.com<mailto:frederic.passeron@hpe.com>
+0. `/etc/wod.sh`
+1. `wod-private/scripts/wod-private.sh`
+2. `wod-backend/scripts/random.sh`
+3. `wod-backend/scripts/functions.sh`
 
-In order to work properly, procmail-action.sh needs to source 3 files:
-
-1- w od.sh
-
-2- r andom.sh
-
-3- f unctions.sh
-
-w od.sh sets a large number of variables: This script is generated at install time as it leverages variables defined at setup time.
-
-# This is the wod.sh script, generated at install
-
+`/etc/wod.sh` sets a large number of variables: This script is generated at install time as it leverages variables defined at setup time.
+```
+cat /etc/wod.sh
+# Shell variables for WoD
 #
-
+#
+# This is the wod.sh script, generated at install
+# Please do not modify directly
+#
 # Name of the admin user
-
 export WODUSER=wodadmin
 
-
-
-# Name of the WoD machine type (backend, api-db, frontend, appliance)
-
+# Name of the wod machine type (backend, api-db, frontend, appliance)
 export WODTYPE=backend
 
-
-
-# This main dir is computed and is the backend main dir
-
-export WODBEDIR=/home/wodadmin/wod-backend
-
-
-
-# BACKEND PART
-
-# The backend dir has some fixed subdirs
-
-# wod-backend (WODBEDIR)
-
-#    |---------- ansible (ANSIBLEDIR)
-
-#    |---------- scripts (SCRIPTDIR defined in all.yml not here to allow overloading)
-
-#    |---------- sys (SYSDIR)
-
-#    |---------- install
-
-#    |---------- conf
-
-#    |---------- skel
-
+# Name of the api-db server
+export WODAPIDBFQDN="wod-apidb1.hpedev-floss-wod.lab"
+# Port of the api-db server
+export WODAPIDBPORT="8021"
+# Name of the external api-db server
+export WODAPIDBEXTFQDN="wod-apidb1.hpedev-floss-wod.lab"
+# Port of the external api-db server
+export WODAPIDBEXTPORT="8021"
+# Combined URL for API access
+export WODAPIDBURL=http://wod-apidb1.hpedev-floss-wod.lab:8021/api
+# Combined URL for external API access
+export WODAPIDBEXTURL=http://wod-apidb1.hpedev-floss-wod.lab:8021/api
+# Combined URL for API backend access
+export WODBEAPIURL=http://wod-backend1.hpedev-floss-wod.lab:8000
 #
-
-export ANSIBLEDIR=$WODBEDIR/ansible
-
-export SYSDIR=$WODBEDIR/sys
-
-
+# Places where repos have been exported for WODUSER
+export WODROOTDIR=/home/wodadmin
+#
+# INSTALL PART
+# The install dir has some fixed subdirs  for shared content
+# wod-install (WODINSDIR)
+#    |---------- ansible (WODINSANSDIR)
+#    |---------- scripts (WODINSSCRIPTDIR)
+#    |---------- skel
+#    |---------- sys (WODINSSYSDIR)
+#
+export WODINSDIR=/home/wodadmin/wod-install/install
+export WODINSANSDIR=/home/wodadmin/wod-install/ansible
+export WODINSSYSDIR=/home/wodadmin/wod-install/sys
+export WODINSSCRIPTDIR=/home/wodadmin/wod-install/scripts
+export WODANSIBLEDIR=/home/wodadmin/wod-backend/ansible
+#
+export WODGROUP=test
+#
+# BACKEND PART
+# The backend dir has some fixed subdirs
+# wod-backend (WODBEDIR)
+#    |---------- ansible (WODANSIBLEDIR)
+#    |---------- conf
+#    |---------- scripts (WODSCRIPTDIR)
+#    |---------- skel
+#    |---------- sys (WODSYSDIR)
+# 
+# Location of the backend directory
+#
+export WODBEDIR=$WODROOTDIR/wod-backend
 
 # PRIVATE PART
-
 # These 3 dirs have fixed names by default that you can change in this file
-
 # they are placed as sister dirs wrt WODBEDIR
-
 # This is the predefined structure for a private repo
-
 # wod-private (WODPRIVDIR)
-
-#    |---------- ansible (ANSIBLEPRIVDIR)
-
+#    |---------- ansible (WODANSIBLEPRIVDIR)
 #    |---------- notebooks (WODPRIVNOBO)
-
-#    |---------- scripts (SCRIPTPRIVDIR)
-
-#
-
-PWODBEDIR=`dirname $WODBEDIR`
-
-export WODPRIVDIR=$PWODBEDIR/wod-private
-
-export ANSIBLEPRIVDIR=$WODPRIVDIR/ansible
-
-export SCRIPTPRIVDIR=$WODPRIVDIR/scripts
-
-export SYSPRIVDIR=$WODPRIVDIR/sys
-
+#    |---------- scripts (WODSCRIPTPRIVDIR)
+# 
+export WODPRIVDIR=$WODROOTDIR/wod-private
+export WODANSIBLEPRIVDIR=$WODPRIVDIR/ansible
+export WODSCRIPTPRIVDIR=$WODPRIVDIR/scripts
+export WODSYSPRIVDIR=$WODPRIVDIR/sys
 export WODPRIVNOBO=$WODPRIVDIR/notebooks
-
 WODPRIVINV=""
-
 # Manages private inventory if any
-
 if [ -f $WODPRIVDIR/ansible/inventory ]; then
-
-        WODPRIVINV="-i $WODPRIVDIR/ansible/inventory"
-
-        export WODPRIVINV
-
+    WODPRIVINV="-i $WODPRIVDIR/ansible/inventory"
 fi
-
-
+export WODPRIVINV
 
 # AIP-DB PART
-
-export WODAPIDBDIR=$PWODBEDIR/wod-api-db
-
-
+#    |---------- ansible (WODANSIBLEDIR)
+#    |---------- conf
+#    |---------- scripts (WODSCRIPTDIR)
+#    |---------- sys (WODSYSDIR)
+#    
+export WODAPIDBDIR=$WODROOTDIR/wod-api-db
 
 # FRONTEND PART
-
-export WODFEDIR=$PWODBEDIR/wod-frontend
-
-
+#    |---------- ansible (WODANSIBLEDIR)
+#    |---------- conf
+#    |---------- scripts (WODSCRIPTDIR)
+#    |---------- sys (WODSYSDIR)
+#
+export WODFEDIR=$WODROOTDIR/wod-frontend
+export WODNOBO=$WODROOTDIR/wod-notebooks
+#
+# DERIVED DIRS valid on the node being installed
+export WODSYSDIR=$WODROOTDIR/wod-$WODTYPE/sys
+export WODSCRIPTDIR=$WODROOTDIR/wod-$WODTYPE/scripts
 
 # These dirs are also fixed by default and can be changed as needed
-
-export WODNOBO=$PWODBEDIR/wod-notebooks
-
-export STUDDIR=/student
-
+export WODSTUDDIR=/student
 #
+export WODANSPRIVOPT=" -e @/home/wodadmin/wod-private/ansible/group_vars/all.yml -e @/home/wodadmin/wod-private/ansible/generated/test"
+export WODANSPLAYOPT="-e WODGROUP=test -e WODUSER=wodadmin -e WODBEDIR=/home/wodadmin/wod-backend -e WODNOBO=/home/wodadmin/wod-notebooks -e WODPRIVNOBO=/home/wodadmin/wod-private/notebooks -e WODPRIVDIR=/home/wodadmin/wod-private -e WODAPIDBDIR=/home/wodadmin/wod-api-db -e WODFEDIR=/home/wodadmin/wod-frontend -e WODSTUDDIR=/student -e WODANSIBLEDIR=/home/wodadmin/wod-backend/ansible -e WODANSIBLEPRIVDIR=/home/wodadmin/wod-private/ansible -e WODSCRIPTDIR=/home/wodadmin/wod-backend/scripts -e WODSCRIPTPRIVDIR=/home/wodadmin/wod-private/scripts -e WODSYSDIR=/home/wodadmin/wod-backend/sys -e WODSYSPRIVDIR=/home/wodadmin/wod-private/sys -e WODINSDIR=/home/wodadmin/wod-install/install -e WODINSSCRIPTDIR=/home/wodadmin/wod-install/scripts -e WODINSANSDIR=/home/wodadmin/wod-install/ansible -e WODINSSYSDIR=/home/wodadmin/wod-install/sys -e @/home/wodadmin/wod-install/ansible/group_vars/all.yml -e WODLDAPSETUP=0 -e WODAPPMIN=0 -e WODAPPMAX=0"
+export WODUSERMAX=100
+```
 
-export ANSPLAYOPT="-e PBKDIR=staging -e WODUSER=wodadmin -e WODBEDIR=/home/wodadmin/wod-backend -e WODNOBO=/home/wodadmin/wod-notebooks -e WODPRIVNOBO=/home/wodadmin/wod-private/notebooks -e WODPRIVDIR=/home/wodadmin/wod-private -e WODAPIDBDIR=/home/wodadmin/wod-api-db -e WODFEDIR=/home/wodadmin/wod-frontend -e STUDDIR=/student -e ANSIBLEDIR=/home/wodadmin/wod-backend/ansible -e ANSIBLEPRIVDIR=/home/wodadmin/wod-private/ansible -e SCRIPTPRIVDIR=/home/wodadmin/wod-private/scripts -e SYSDIR=/home/wodadmin/wod-backend/sys -e SYSPRIVDIR=/home/wodadmin/wod-private/sys"
-
-export ANSPRIVOPT=" -e @/home/wodadmin/wod-private/ansible/group_vars/all.yml -e @/home/wodadmin/wod-private/ansible/group_vars/staging"
-
-r andom.sh Exports the randomly generated password.
+random.sh exports the randomly generated password.
+```
+TODO
+```
 
 f unctions.sh Is a library of shell functions used by many scripts, among which can be found procmail-action.sh. Details are shown below.
 
@@ -1090,7 +1057,7 @@ If you take a look at the file structure of the `wod-backend` directory, you wil
 
 Simple tree view of the wod-backend directory:
 
-![](img/wod-blogserie2-tree1.png "Tree view of wod-backend directory")
+![Tree view of wod-backend directory](img/wod-blogserie2-tree1.png "Tree view of wod-backend directory")
 
 The `ansible` folder contains all the necessary playbooks and variables files to support the main functions of the backend server. It provides playbooks for a minimal installation of the servers or appliances. It also allows the setup of the different types of servers (i.e backend, frontend, and/or api-db), appliances (virtual machines or containers), or workshops as well as maintenance tasks.
 
@@ -1338,7 +1305,7 @@ When the HPE Developer Community began implementing their Workshop-on-Demand pro
 
 In this post, I won't focus on the subject selection process. I'll leave that to you to figure it out. I will, however, talk a little bit again about the infrastructure, especially the dedicated scripts and variables that you need to create to support the lifecycle of the workshop. As usual, there are two sides to the workshop's creation--what should be done on the backend and what needs to be done mainly for the api db server.
 
-![](img/wod-blogserie3-archi3.png "WOD Overview.")
+![](img/wod-blogserie3-archi3.png "WoD Overview.")
 
 ## What is a workshop? What do you need to develop?
 
