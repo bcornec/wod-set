@@ -80,7 +80,7 @@ Full installation example of a stack with:
 - management user being wodmgr
  
 On the be1 machine:
-  sudo ./install.sh -a apidb.local:10000::https -f front.local:8000:https \
+  sudo ./install.sh -a apidb.local:10000:https -f front.local:8000:https \
   -g test -u wodmgr -p 9000 -s wodmailer@local\
   -b be1.local:8010 -n 1 -t backend \
 On the be2 machine:
