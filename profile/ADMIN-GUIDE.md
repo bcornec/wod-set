@@ -552,39 +552,36 @@ If you need to develop private content that cannot be shared with the wider Open
 The principle remains similar, with a few differences explained below.
 
 * After cloning the wod-install repository, you will fork the following public private [repo](https://github.com/Workshops-on-Demand/wod-private.git) on Github under your own Github account (we will refer to it as `Account`).    
-* Next, clone the forked repo.    
-* Edit the `all.yml` and `<groupname>` files to customize your setup. This variable `<groupname>` defines possible backend server in your environement. By default, the project comes with a sample working file named `production` in `ansible/group-vars`. But you could have multiple. In our case, we have defined `sandbox`, `test`, `staging` and several `production` files, all defining a different backend environment. These files will be used to override the default values specified by the public version delivered as part of the default public installation.    
-* Commit and push changes to your repo.    
-* Create an `install.priv` file located in `install` directory when using a private repo (consider looking at [install.repo](https://github.com/Workshops-on-Demand/wod-backend/blob/main/install/install.repo) file for a better understanding of the variables).
-* Define the WODPRIVREPO and WODPRIVBRANCH variables as follows:    
-
+* Next, clone the forked repo.
+```shellsession
+git clone https://github.com/Workshops-on-Demand/wod-private.git
+cd wod-private
+git remote add myrepo https://github.com/Account/wod-private.git
+``` 
+* Edit the `ansible/group_vars/all.yml` file to customize your setup. You can create a `<groupname>` directory ander the `ansible` directory in which you can create similar files to the one you have in `wod-backend/ansible/groupname` after the previous installation. This variable `<groupname>` defines possible backend server in your environement. You could have multiple groupnames. In our case, we have defined `sandbox`, `test`, `staging` and several `production` subdirectories, all defining a different backend environment. These files will be used to override the default values specified by the public version delivered as part of the default public installation.    
+* Commit and push changes to your repo.
+* Create an `install.priv` file located in the `wod-install/install` directory when using a private repo (consider looking at [install.repo](https://github.com/Workshops-on-Demand/wod-backend/blob/main/install/install.repo) file for a better understanding of the variables).
+* Define the WODPRIVREPO and WODPRIVBRANCH variables as follows:
   * `WODPRIVBRANCH="main"`     
   * `WODPRIVREPO="git@github.com:Account/Private-Repo.git wod-private"`    
 
 **Note:** When using a token
 
-Please refer to the following [url](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) to generate a `token` file in `install` directory of WoD-backend:
+Please refer to the following [url](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) to generate a `token` file in the `install` sub-directory of wod-backend:
 
 * Edit the `install.priv` file located in `install` directory of wod-install:  
+  * Create a line before variable declaration reading ``token=`cat $EXEPATH/token` ``    
+  * Use the token in the url WODPRIVREPO="git clone https://user:$token@github.com/Account/wod-private.git wod-private" to take advantage of it.
 
-  * Create line before variable declaration: ``token=`cat $EXEPATH/token` ``    
-  * Use the token in the url WODPRIVREPO="git clone https://user:$token@github.com/Account/wod-private.git wod-private"    
+You are now ready to perform the installation again to support a private repository.
 
-You are now ready to perform the installation again to support a private repository. 
+Please note that this setup phase can be concurrent with the public setup phase. Indeed, the install scripts should detect the presence of the private repository owing to the presence of the install.priv file. It will automatically adjust the different scripts and variables to add the relevant content. It will actually overload some of the variables with private ones.
 
-Please note that this setup phase can be concurrent with the public setup phase. Indeed, the install script should detect the presence of the private repository owing to the presence of the install.priv file. It will automatically adjust the different scripts and variables to add the relevant content. It will actually overload some of the variables with private ones.
+Also note that if you use a different branch than the standard one (main usually), you can use additional variables in the `install.priv` file to overwrite the branch with the name you use instead. After the clone you'll then point to the right branch.
 
-You now have a working Workshops-on-Demand backend server in place. Congratulations! The next article in the series will help you better understand the lifecycle of the backend server. How does a workshop registration work from the backend server 's side? How do you manage this server on a daily basis? How and when do you need to update it ? All these questions will be answered in the next article. And from there, we will move to the frontend side of things and finally to a workshop's creation process.
+You now have a working Workshops-on-Demand backend server in place. Congratulations! NOw we have to look at the lifecycle of the backend server. How does a workshop registration work from the backend server 's side? How do you manage this server on a daily basis? How and when do you need to update it ? This is explained in the next paragraphs.
 
-If you need support for this installation process, use our dedicated [slack channel](https://hpedev.slack.com/archives/C01B60X8SSD).
-
-Please be sure to check back [HPE Developer blog site](https://developer.hpe.com/blog) to read all the articles in this series. Also, check out  the Hack Shack for new [workshops](https://developer.hpe.com/hackshack/workshops) [Data Visualization 101](https://developer.hpe.com/hackshack/replays/42) is now available! Stay tuned for additional Workshops-on-Demand in our catalog.In the previous article<https://developer.hpe.com/blog/open-sourcing-workshops-on-demand-part2-deploying-the-backend/> of this series, I explained how to deploy the backend server of our Workshops-on-Demand infrastructure.
-
-In this article, I will dig into details on the backend server. I will cover the inner workings of the registration process, explaining how a workshop is deployed on the backend server. Even though it takes only a few minutes for the backend server to deploy a workshop, there are many processes taking place in the background, which I will cover here.
-
-As a reminder, here is a diagram showing the different parts of the Workshops-on-Demand infrastructure. In this article, I will once again focus on the backend server side and, more precisely, on the JupyterHub server, where all the automation takes place.
-[cid:image003.png@01DC3DC6.A29E6220]
-Backend server / workshops deployment lifecycle
+## Workshops deployment lifecycle
 
 The following picture depicts what happens on the backend server when a participant registers for a workshop. If you remember from the first article, upon registration the frontend sends instructions to the backend server through a procmail API call so the latter can proceed with the workshop preparation and deployment. Once these tasks are completed, it provides the API-DB server with the relevant information
 
