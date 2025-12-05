@@ -88,7 +88,7 @@ On the be2 machine:
   -g test -u wodmgr -p 9000 -s wodmailer@local\
   -b be2.local:8010 -n 2 -t backend \
 On the apidb machine:
-  sudo ./install.sh -t apidb -b .local:10000 -f front.local:8000 \
+  sudo ./install.sh -a apidb.local:10000:https -f front.local:8000:https \
   -g test -u wodmgr -p 9000 -s wodmailer@local\
   -b be1.local:8010,be2.local:8010 -t api-db \
 On the frontend machine:
