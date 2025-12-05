@@ -322,11 +322,11 @@ It provides:
   * Security Management
   * Workshops updates
 
-#### Backend server preparation:
+### Backend server preparation:
 
-The installation process is handled by a dedicated repo : wod-install. This repo needs to be cloned on every single machine  constituting the wod architecture. Before cloning the wod-install repository, you will need to prepare the server that will host the backend features. When ready, you will proceed with the cloning and then the installation process.
+The installation process is handled by a dedicated repo : [wod-install](https://github.com/Workshops-on-Demand/wod-install). This repo needs to be cloned on every single machine  constituting the wod architecture. Before cloning the wod-install repository, you will need to prepare the server that will host the backend features. When ready, you will proceed with the cloning and then the installation process.
 
-##### Prerequesites:
+#### Prerequesites:
 
 In order to setup the backend server, you will need:
 
@@ -520,7 +520,7 @@ WODFEAPIPWD: MotDePasseCompliquéAussi125!!!##
 
  See the example below for a backend server.  
 
-### Backend server installation :
+## Backend server installation :
 
 [](https://github.com/Workshops-on-Demand/wod-backend/blob/main/INSTALL.md#for-private-based-workshops-on-demand-private-backend--private-workshops-or-if-you-need-to-modify-defaults)Once you are done with the files, you can can proceed with the installation itself. The installation is based on a common install script [install.sh ](https://github.com/Workshops-on-Demand/wod-backend/blob/main/install/install.sh)that allows the deployment of the different parts of the solution. The script is located under the `wod-install/install/` directory.
 
@@ -709,9 +709,9 @@ You can then start developing new notebooks for your public based environment. A
 
 If you need to develop private content that cannot be shared with the wider Open Source Community because of dedicated IP, the next section in this article will explain how to handle this.
 
-### **How to handle private-content based Workshops-on-Demand**
+## **How to handle private-content based Workshops-on-Demand**
 
-#### *(private backend + private workshops on top of default public backend and notebooks)*
+### *(private backend + private workshops on top of default public backend and notebooks)*
 
 The principle remains similar, with a few differences explained below.
 
@@ -1249,11 +1249,11 @@ In previous articles of this series dedicated to the [open sourcing of our Works
 
 Once up and running, the main purpose of the backend server is to deliver workshops-on-Demand. But to do so, it may require updates, upgrades, and/or new kernels for the JupyterHub server. If new workshops are created, this means you'll need new jinja templates for related workshops' scripts (i.e `create<WKSHP>.sh`, `cleanup<WKSHP>.sh`, `reset<WKSHP>.sh`, among others). This also means new variable files. And obviously, these templates and variables will need to be taken into account by scripts and notebooks. Some tasks handle all of this. And that's what I'll show now.
 
-#### Backend server management:
+### Backend server management:
 
 If you take a look at the file structure of the `wod-backend` directory, you will discover that the team did its best to sort things properly depending on their relationship to system  or workshops.
 
-##### Content of the backend server:
+#### Content of the backend server:
 
 Simple tree view of the wod-backend directory:
 
@@ -1351,7 +1351,7 @@ The very last line of the trace will provide you with the credentials necessary 
 
 There are two types of activities that can occur on the backend server: punctual or regular. The punctual activity is one that is performed once every now and then. The regular one is usually set up on the backend server as a cron job. Sometimes however, one of these cron tasks can be forced manually if necessary. One of the most important scheduled task is the `deliver` task. I will explain it later on in this chapter. I will start now by explaining an important possible punctual task, the update of the backend server.
 
-#### Update of the backend server:
+### Update of the backend server:
 
 The backend server hosts all the necessary content for delivering workshops: it supplies notebooks,scripts and playbooks to deploy and personalize them. It also hosts some services that are needed by the overall architecture solution (JupyterHub, Procmail, Fail2ban among others).
 
@@ -1424,7 +1424,7 @@ You will start by moving to your public backend forked repository and apply the 
 
 Then you will perform a merge request with the main repository. We plan to integrate here  in a proper CICD (continuous integration continous development) pipeline to allow a vagrant based test deployment. Whenever someone performs a merge request on the main repo, the test deployment task kicks in and deploys a virtual backend server on which the new version of the installation process is automatically tested. When successful, the merge request is accepted. Once merged, you will need to move to your backend server and perform git remote update and git rebase on the wod-backend directory. Once done, you will then be able to perform the installation process.
 
-#### Regular maintenance of the backend server:
+### Regular maintenance of the backend server:
 
 On a daily basis, some tasks are launched to check the integrity of the backend server. Some tasks are related to the security integrity of the system. The following playbook is at the heart of this verification: **wod-backend/ansible/check_backend.yml**. Full version of the file is available [here](https://github.com/Workshops-on-Demand/wod-backend/blob/main/ansible/check_backend.yml) for review.
 
