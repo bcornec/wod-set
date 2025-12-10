@@ -50,9 +50,9 @@ We quickly chose the various tools that will help us manage this efficiently:
 
 From an architecture perspective, we rapidly agreed that we would need multiple machines/services:
 ![Multiple servers/services](img/wod-infra-open-source.png "Multiple servers/services")
-- A frontend server to manage the workshop list and allow user registration
-- An API server coupled with the Database to orchestrate the platform
-- A backend server on which will run the JupyterHub service and where the Notebooks will be deployed
+- A frontend server to manage the workshop list and allow user registration called wod-frontend
+- An API server coupled with the Database to orchestrate the platform called wod-api-db
+- A backend server on which will run the JupyterHub service and where the Notebooks will be deployed called wod-backend
 - Appliances servers running the technology at work in the Notebook (optional)
 
 For our automation, we have Ansible playbooks that would perform:
@@ -61,16 +61,16 @@ For our automation, we have Ansible playbooks that would perform:
     - Apps Installation
     - System Performance Tuning including kernels setup & configuration
     and depending on the server:
-    - on backend:
+    - on wod-backend:
         - JupyterHub application installation and configuration
         - Linux students creation
         - JupyterHub users creation
         - A complete JupyterHub server preinstalled and configured with some additional Jupyterhub kernels
         - A postfix server used for the procmail API
-    - on frontend:
+    - on wod-frontend:
          - Javascript setup with npm
          - portal installation and launch
-    - on the API/DB:
+    - on wod-api-db:
          - Javascript setup with npm
          - PostgreSQL install and setup with sequelize
          - REST API server installation and launch
@@ -94,8 +94,8 @@ We created as many Git repositories as needed, for the infrastructure management
 - [wod-api-db](https://github.com/Workshops-on-Demand/wod-api-db) for the REST Open API 3.0 based API and a PostgreSQL DB hosting the different status of participants, workshops, and students.
 - [wod-backend](https://github.com/Workshops-on-Demand/wod-backend) for the JupyterHub and Postfix mail server.
 - [wod-notebooks](https://github.com/Workshops-on-Demand/wod-notebooks) for the public Jupyter based Notebooks provided. You can test them live at <https://hackshack.hpedev.io/workshops>
-- [wod-private](https://github.com/Workshops-on-Demand/wod-private) as a template for using a WoD private setup alongside the public one, including a cutomization layer on top of the public standard WoD Backend / WoD Notebooks content. Do not put any confidential data here as this is a public repository!
-- [wod-install](https://github.com/Workshops-on-Demand/wod-install) for the installation of the WoD infrastructure, allowing you to install either Backend, API-DB or Frontend servers using a single line of command.
+- [wod-private](https://github.com/Workshops-on-Demand/wod-private) as a template for using a WoD private setup alongside the public one, including a cutomization layer on top of the public standard wod-backend / WoD Notebooks content. Do not put any confidential data here as this is a public repository!
+- [wod-install](https://github.com/Workshops-on-Demand/wod-install) for the installation of the WoD infrastructure, allowing you to install either wod-backend, wod-api-db or wod-frontend servers using a single line of command.
 - [wod-doc](https://github.com/Workshops-on-Demand/.github) for the project documentation (you're on it !)
 
 **Note:** *There are 7 repositories available for now.*
@@ -108,21 +108,21 @@ Let us first show you how the overall process works for our Workshops-on-Demand:
 
 If you’re looking for a live explanation of this automation, you can review [the following session](https://www.youtube.com/watch?v=D6Ss3T2p008&t=515s) delivered at Linuxconf in Australia in January 2021. If you prefer reading, consider our [User's Guide](USER-GUIDE.md). Here we'll go into more technical details on how this performed:
 
-**Step 1:** The customer registers for a workshop online at our portal. When clicking the register button for the selected workshop and after agreeing to the terms and conditions, the frontend triggers the first REST API calls to the API-DB server:
+**Step 1:** The customer registers for a workshop online at our portal. When clicking the register button for the selected workshop and after agreeing to the terms and conditions, the wod-frontend triggers the first REST API calls to the wod-api-db server:
 -    Register the student in the Customers Database.
 -    Send a welcome email to the student.
 -    Assign a student ID to him/her according to the student range allocated to the given workshop.
 
-**Step 2:** The API-DB server then orders (through a mail API call managed by procmail) the backend to:
+**Step 2:** The wod-api-db server then orders (through a mail API call managed by procmail) the wod-backend to:
 -    Generate a random password for the selected student
 -    Deploy the selected workshop
 
-**Step 3:** The backend server calls back the API-DB server using its REST API to:
+**Step 3:** The wod-backend server calls back the wod-api-db server using its REST API to:
 -    Provide back the new student password
 -    Make the student’s database record active
 -    Decrement Workshop capacity
 
-**Step 4:** The API-DB server sends:
+**Step 4:** The wod-api-db server sends:
 -    The credentials email to allow the student to connect to the workshop
 
 This infrastructure automation relies mainly on a few bash scripts and Ansible playbooks to:
@@ -136,9 +136,9 @@ This infrastructure automation relies mainly on a few bash scripts and Ansible p
 -    Update student permissions
 -    Perform all necessary create or reset actions linked to a given workshop outside of the notebook customization
 
-The API-DB server actually sends an email to the backend with a dedicated format (an API!) that is then parsed by the Procmail process to retrieve the necessary information to perform the different tasks. We use 4 verbs: CREATE (to setup to the student environment as described upper), DELETE (to remove the user from tables), RESET (to clean up the student content and reset the back-end infrastructure when needed) and PURGE (globally DELETE+RESET aka full cleanup)
+The wod-api-db server actually sends an email to the wod-backend with a dedicated format (an API!) that is then parsed by the Procmail process to retrieve the necessary information to perform the different tasks. We use 4 verbs: CREATE (to setup to the student environment as described upper), DELETE (to remove the user from tables), RESET (to clean up the student content and reset the back-end infrastructure when needed) and PURGE (globally DELETE+RESET aka full cleanup)
 
-At the end of this automated process, the backend makes a series of API calls to the API-DB server to send back the required information, like a new password, workshop status, etc.
+At the end of this automated process, the wod-backend makes a series of API calls to the wod-api-db server to send back the required information, like a new password, workshop status, etc.
 
 # A bit of background
 
@@ -156,7 +156,7 @@ Secondly, the project is based on open source technologies like Jupyter and Ansi
 
 We have, actually, shared the fundamentals of the project thoughout the HPE Developer Community, and to a wider extent, the Open Source Community  through different internal and external events. And the feedback has always been positive. Some people found the project very appealing. Originally, and long before even thinking of open sourcing the project, when we really started the project development, people were mainly interested in the content and not necessarily in the infrastructure. The students wanted to be able to reuse some of the notebooks. And in a few cases, they also asked for details about the infrastructure itself, asking about the notebooks delivery mechanism and other subjects like the [procmail API](https://www.youtube.com/watch?v=zZm6ObQATDI).
 
-In 2022, we were contacted by an HPE colleague who was willing to replicate our setup in order to deliver notebooks to its AI/ML engineers. His aim was to provide a simple, central point from which he could deliver Jupyter Notebooks, that would later be published on the Workshops-on-Demand infrastructure frontend portal, allowing content to be reused and shared amongst engineers. While, over time, we had worked  a lot on automating content delivery and some parts of the infrastructure setup, we needed now to rework and package the overall solution to make it completely open source and reusable by others.
+In 2022, we were contacted by an HPE colleague who was willing to replicate our setup in order to deliver notebooks to its AI/ML engineers. His aim was to provide a simple, central point from which he could deliver Jupyter Notebooks, that would later be published on the Workshops-on-Demand infrastructure wod-frontend portal, allowing content to be reused and shared amongst engineers. While, over time, we had worked  a lot on automating content delivery and some parts of the infrastructure setup, we needed now to rework and package the overall solution to make it completely open source and reusable by others.
 
 As a result of our work on that project, over the course of 2022 we started to open source the Workshops-on-Demand program. As a project developed within the confiines of Hewlett Packard Enterprise (HPE), we had a number of technical, branding, and legal hurdles we needed to overcome in order to achieve this.
 
@@ -188,31 +188,31 @@ Now that you understand the basic principle, let's look at the details. The imag
 
 ## The Register Phase
 
-**1.** Participants start by browsing a frontend web server that presents the catalog of available workshops. They then select one and register for it by entering their email address, first and last names, as well as their company name. Finally, they accept the terms and conditions and hit the register button.
+**1.** Participants start by browsing a wod-frontend web server that presents the catalog of available workshops. They then select one and register for it by entering their email address, first and last names, as well as their company name. Finally, they accept the terms and conditions and hit the register button.
 
-As the register button is clicked, the frontend server performs a series of actions.
+As the register button is clicked, the wod-frontend server performs a series of actions.
 
 **2.** Assigns a student (i.e student401) from the dedicated workshop range to the participant. Every workshop has a dedicated range of students assigned to it.
 
-Here is a screenshot of the workshop table present in the frontend database server showing API 101 workshops details.
+Here is a screenshot of the workshop table present in the wod-api-db database server showing API 101 workshops details.
 
-![Workshops Table from API-DB server](img/wod-db-workshop-table.png "Workshops Table from API-DB server")
+![Workshops Table from wod-api-db server](img/wod-db-workshop-table.png "Workshops Table from wod-api-db server")
 
 * Frederic Passeron gets assigned a studentid "student397" for workshop "API101".
 
   Here are the details of the participant info when registered to a given workshop.
 
-![Customers Table from API-DB server](img/wod-db-customer-table.png "Customers Table from API-DB server")
+![Customers Table from wod-api-db server](img/wod-db-customer-table.png "Customers Table from wod-api-db server")
 
-**3.** An initial email is sent to participants from the API-DB server welcoming them to the workshop and informing them that the deployment is ongoing and that a second email will arrive shortly providing the necessary information required to log onto the workshop environment.
+**3.** An initial email is sent to participants from the wod-api-db server welcoming them to the workshop and informing them that the deployment is ongoing and that a second email will arrive shortly providing the necessary information required to log onto the workshop environment.
 
-**4.** At the same time, the API-DB server sends the necessary orders through a procmail API call to the backend server. The mail sent to the backend server contains the following details:
+**4.** At the same time, the wod-api-db server sends the necessary orders through a procmail API call to the wod-backend server. The mail sent to the wod-backend server contains the following details:
 
 * Action Type ( CREATE, CLEANUP, RESET, PURGE)
 * Workshop ID
 * Student ID
 
-**5.** The backend server recieves the order and processes it by parsing the email recieved using the procmail API. The procmail API automates the management of the workshops.
+**5.** The wod-backend server recieves the order and processes it by parsing the email recieved using the procmail API. The procmail API automates the management of the workshops.
 
 Like any API, it uses verbs to perform tasks.
 
@@ -226,15 +226,15 @@ Like any API, it uses verbs to perform tasks.
 * **6.** It prepares any infrastructure that might be required for the workshop (Virtual Appliance, Virtual Machine, Docker Container, LDAP config, etc.).
 * It generates a random Password for the allocated student.
 * It deploys the workshop content on the jupyterhub server in the dedicated student home directory (Notebooks files necessary for the workshops).
-* **7.** It sends back the confirmation of the deployment of the workshop, along with the student's required details (i.e password), through API Calls to the API-DB server.
+* **7.** It sends back the confirmation of the deployment of the workshop, along with the student's required details (i.e password), through API Calls to the wod-api-db server.
 
-**8.** The frontend server tables will be updated in the following manner:
+**8.** The wod-api-db server tables will be updated in the following manner:
 
 * The customers table shows an active status for the participant row. The password field has been updated.
 * The workshops table also gets updated. The capacity field decrements the number of available seats.
 * The students tables gets updated as well by setting the allocated student to active
 
-**9.** The API-DB server sends the second email to each participant providing them with the details to connect to the workshop environment.
+**9.** The wod-api-db server sends the second email to each participant providing them with the details to connect to the workshop environment.
 
 ## The Run Phase
 
@@ -242,9 +242,9 @@ Like any API, it uses verbs to perform tasks.
 
 Participants will go through the different steps and labs of the workshop connecting to the necessary endpoints and leveraging the different kernels available on the JupyterHub server.
 
-Meanwhile, the API-DB server will perform regular checks on how much time has passed. Depending on the time allocation (from 2 to 4 hours) associated with the workshop, the API-DB server will send a reminder email usually an hour before the end of the time allocated. The time count actually starts when participants hit the register for the workshop button. It is mentioned in the terms and conditions.
+Meanwhile, the wod-api-db server will perform regular checks on how much time has passed. Depending on the time allocation (from 2 to 4 hours) associated with the workshop, the wod-api-db server will send a reminder email usually an hour before the end of the time allocated. The time count actually starts when participants hit the register for the workshop button. It is mentioned in the terms and conditions.
 
-Finally, when the time is up, the API-DB server sends a new order to the backend to perform either CLEANUP and/or RESET action for the dedicated studentid.
+Finally, when the time is up, the wod-api-db server sends a new order to the wod-backend to perform either CLEANUP and/or RESET action for the dedicated studentid.
 
 **RESET subtasks:**
 [//]: # (TODO: document CLEANUP and PURGE here as well)
@@ -252,16 +252,16 @@ Finally, when the time is up, the API-DB server sends a new order to the backend
 * It resets any infrastructure that was required for the workshop (Virtual Appliance, Virtual Machine, Docker Container, LDAP config, etc..).
 * It generates a random password for the allocated student.
 * It deletes the workshop content on the JupyterHub server in the dedicated student home directory (Notebooks files necessary for the workshop).
-* It sends back the confirmation of the CLEANUP or RESET of the workshop along with the student details (i.e password) through API Calls to the API-DB server.
+* It sends back the confirmation of the CLEANUP or RESET of the workshop along with the student details (i.e password) through API Calls to the wod-api-db server.
 
-The API-DB server tables will be updated in the following manner:
+The wod-api-db server tables will be updated in the following manner:
 
 * The customers table will show an inactive status for the participant row. The password field has been updated.
 * The workshops table gets also updated. The capacity field increment the number of available seats.
 * The students tables gets updated as well by setting the allocated student to inactive.
-* The API-DB sends the final email to the participant.
+* The wod-api-db server sends the final email to the participant.
 
-## The React and Reward Phase:
+## The React and Reward Phase
 
 * A final email thanks the students for their participation. It provides a link to an external survey and encourages the participants to share their achievement [badge](ADMIN-GUIDE.md#Badges) on social media like linkedin or twitter.
 
@@ -269,7 +269,7 @@ The API-DB server tables will be updated in the following manner:
 
 # Deploying the infrastructure
 
-The overall infrastructure can run on physical servers or Virtual Machines. We usually designate one server for the frontend, one for the API-DB and PostgreSQL DB and a third (or more) server for the backend.
+The overall infrastructure can run on physical servers or Virtual Machines. We usually designate one server for the wod-frontend, one for the wod-api-db and a third (or more) server for the wod-backend.
 
 ![WoD Infrastucture](img/wod-infra-open-source.png "WoD Infrastucture")
 
@@ -277,17 +277,17 @@ The project is split into multiple repositories. The project admins will need to
 
 We will start with the simpliest scenario: A public-only approach. Then we will dive into the specificities related to the private approach, which will require the reading of the public-only approach anyway.
 
-## Public-only Deployment: No private backend nor private workshops
+## Public-only Deployment: No private wod-backend nor private workshops
 
 **Important Note:**  *This part is compulsory for any type of deployment, public only or public+private.*
 
-### Backend server preparation
+### wod-backend server preparation
 
-The installation process is handled by a dedicated repo : [wod-install](https://github.com/Workshops-on-Demand/wod-install). This repo needs to be cloned on every single machine  constituting the WoD architecture. Before cloning the `wod-install` repository, you will need to prepare the server that will host the backend features. When ready, you will proceed with the cloning and then the installation process.
+The installation process is handled by a dedicated repo : [wod-install](https://github.com/Workshops-on-Demand/wod-install). This repo needs to be cloned on every single machine  constituting the WoD architecture. Before cloning the `wod-install` repository, you will need to prepare the server that will host the wod-backend features. When ready, you will proceed with the cloning and then the installation process.
 
 #### Prerequesites
 
-In order to setup the backend server, you will need:
+In order to setup the wod-backend server, you will need:
 
 * A fresh minimal OS install on physical/virtualized server running Ubuntu 24.04 leveraging any deployment mechanism of your choice.(e.g. through [iLO](https://en.wikipedia.org/wiki/HPE_Integrated_Lights-Out), automatic installation with [preseed](https://wiki.debian.org/DebianInstaller/Preseed), [virt-lightning](https://github.com/virt-lightning/virt-lightning), etc...).
 * A Linux account with sudo priviledges on your Linux distro. Name it `install`
@@ -302,7 +302,7 @@ We are currently using an either an ProLiant DL360 Gen10 server on our different
 
 When done with OS installation and preparation
 
-* From the WoD-backend server (aka JupyterHub server), as the `install` user, you will need to clone the `wod-install` repo first.
+* From the wod-backend server (aka JupyterHub server), as the `install` user, you will need to clone the `wod-install` repo first.
 
 ```shellsession
 git clone https://github.com/Workshops-on-Demand/wod-install.git
@@ -350,9 +350,9 @@ SURVEYCHALURL: TBD
 #OPNSENSEIP:
 #OPNSENSEPORT:
 ```
-See the example below for a backend server.
+See the example below for a wod-backend server.
 
-### Backend server installation
+### wod-backend server installation
 
 The installation is based on a common install script [install.sh](https://github.com/Workshops-on-Demand/wod-install/blob/main/install/install.sh) that allows the deployment of the different servers comprising the solution. The script is located under the `wod-install/install/` directory.
 
@@ -361,7 +361,7 @@ It can be called as follows:
 
 `install.sh [-h][-t type][-i ip][-g groupname][-b backend[:beport:[beproto]][-n number][-j backendext[:beportext[:beprotoext]]][-f frontend[:feport[:feproto]]][-w frontendext[:feportext[:feprotoext]]][-a api-db[:apidbport[:apidbproto]]][-e api-dbext[:apidbportext[:apidbprotoext]]][-u user][-p postport][-k][-c][-s sender]`
 
-As you can see on the command line, the -t parameter will define whether you install a backend, an api-db, or a frontend server. Having this information, the script will clone the relevant repositoriesy for the installation. If `t=backend`, then the `wod-backend` repository is cloned as part of the installation process, and the relevant installation scripts are called. Same goes for api-db, and frontend servers.
+As you can see on the command line, the -t parameter will define whether you install a wod-backend, a wod-api-db, or a wod-frontend server. Having this information, the script will clone the relevant repositoriesy for the installation. If `t=backend`, then the `wod-backend` repository is cloned as part of the installation process, and the relevant installation scripts are called. Same goes for the wod-api-db and the wod-frontend servers.
 
 `-h` provides the help
 
@@ -537,7 +537,7 @@ All playbooks are self-documented. Please check for details.
 
 **Note:** *A wod-install.log is available under the home folder of the install user under the `.wod-install` directory. It contains the installation log along with a another file containg the wodadmin credentials.*
 
-We leave it to you to handle the necessary port redirection and SSL certificates management when needed. In our case, we went for a simple yet efficient solution based on an OPNSense Firewall along with a HAProxy setup to manage ports'redirection, HTTP to HTTPS Redirection, SSL Certificates. The backend also includes a Fail2ban service for login security management.
+We leave it to you to handle the necessary port redirection and SSL certificates management when needed. In our case, we went for a simple yet efficient solution based on an OPNSense Firewall along with a HAProxy setup to manage ports'redirection, HTTP to HTTPS Redirection, SSL Certificates. The wod-backend also includes a Fail2ban service for login security management.
 
 At this point, you should be able to access your JupyterHub environment with a few pre-installed set of kernels like `Bash, Python, ansible, ssh, PowerShell`.
 
@@ -547,7 +547,7 @@ If you need to develop private content that cannot be shared with the wider Open
 
 ## **How to handle private-content based Workshops-on-Demand**
 
-### *(private backend + private workshops on top of default public backend and notebooks)*
+### *(private wod-backend + private workshops on top of default public wod-backend and notebooks)*
 
 The principle remains similar, with a few differences explained below.
 
@@ -558,7 +558,7 @@ git clone https://github.com/Workshops-on-Demand/wod-private.git
 cd wod-private
 git remote add myrepo https://github.com/Account/wod-private.git
 ```
-* Edit the `ansible/group_vars/all.yml` file to customize your setup. You can create a `<groupname>` directory ander the `ansible` directory in which you can create similar files to the one you have in `wod-backend/ansible/groupname` after the previous installation. This variable `<groupname>` defines possible backend server in your environement. You could have multiple groupnames. In our case, we have defined `sandbox`, `test`, `staging` and several `production` subdirectories, all defining a different backend environment. These files will be used to override the default values specified by the public version delivered as part of the default public installation.
+* Edit the `ansible/group_vars/all.yml` file to customize your setup. You can create a `<groupname>` directory ander the `ansible` directory in which you can create similar files to the one you have in `wod-backend/ansible/groupname` after the previous installation. This variable `<groupname>` defines possible wod-backend server in your environement. You could have multiple groupnames. In our case, we have defined `sandbox`, `test`, `staging` and several `production` subdirectories, all defining a different wod-backend environment. These files will be used to override the default values specified by the public version delivered as part of the default public installation.
 * Commit and push changes to your repo.
 * Create an `install.priv` file located in the `wod-install/install` directory when using a private repo (consider looking at [install.repo](https://github.com/Workshops-on-Demand/wod-backend/blob/main/install/install.repo) file for a better understanding of the variables).
 * Define the WODPRIVREPO and WODPRIVBRANCH variables as follows:
@@ -579,18 +579,18 @@ Please note that this setup phase can be concurrent with the public setup phase.
 
 Also note that if you use a different branch than the standard one (main usually), you can use additional variables in the `install.priv` file to overwrite the branch with the name you use instead. After the clone you'll then point to the right branch.
 
-You now have a working Workshops-on-Demand backend server in place. Congratulations! Now we have to look at the lifecycle of the backend server. How does a workshop registration work from the backend server side? How do you manage this server on a daily basis? How and when do you need to update it ? This is explained in the next paragraphs.
+You now have a working wod-backend server in place. Congratulations! Now we have to look at the lifecycle of the wod-backend server. How does a workshop registration work from the wod-backend server side? How do you manage this server on a daily basis? How and when do you need to update it ? This is explained in the next paragraphs.
 
 # Workshops deployment lifecycle
 
-The following picture depicts what happens on the backend server when a participant registers for a workshop. If you remember from the first article, upon registration the frontend sends instructions to the backend server through a procmail API call so the latter can proceed with the workshop preparation and deployment. Once these tasks are completed, it provides the API-DB server with the relevant information
+The following picture depicts what happens on the wod-backend server when a participant registers for a workshop. Upon registration the wod-api-db sends instructions to the wod-backend server through a procmail API call so the latter can proceed with the workshop preparation and deployment. Once these tasks are completed, it provides the wod-api-db server with the relevant information
 
-Let's now look in details what is really happening on the backend server's side:
+Let's now look in details what is really happening on the wod-backend server's side:
 ![WoD backend deployment lifecycle](img/wod-backend-lifecycle.png "WoD backend deployment lifecycle")
 
-## procmail API
+## The procmail API
 
-The procmail API: This is a mail parsing process allowing the backend server to retrieve the relevant information in order to perform appropriate actions. As with any API, it uses verbs to perform actions. In our case, we leverage CREATE, CLEANUP, RESET and PURGE.
+This is a mail parsing process allowing the wod-backend server to retrieve the relevant information in order to perform appropriate actions. As with any API, it uses verbs to perform actions. In our case, we leverage CREATE, CLEANUP, RESET and PURGE.
 
 You can get more info on [procmail](https://fr.wikipedia.org/wiki/Procmail) usage, on [this page](https://wiki.archlinux.org/title/Procmail).
 
@@ -629,7 +629,7 @@ LOGFILE=$MAILDIR/from
 
 The From: is important as .procmailrc checks that the sender is the one configured during the installation (`-s` option of the install.sh script). Any mail from any other sender but the configured one is not processed.
 
-This API is actually based on a script procmail-action.sh, which defines the different operations linked to the verbs passed through the API calls via .procmailrc
+This API is actually based on a script `procmail-action.sh`, which defines the different operations linked to the verbs passed through the API calls via `.procmailrc`.
 
 ## CREATE Verb
 
@@ -780,7 +780,7 @@ export RANDOMPW=""
 - `wod_create_var_passwd()` This function creates a variable file in which password is stored from the ansible playbook with $randompw
 - `wod_erase_student()` This function erases all the content from the allocated student's home directory. You want to make sure that the home directory is not compromised. You want to start clean. Used during CLEANUP phase.
 - `wod_generate_randompwd() This function creates a random password for a user. It is used both for local and LDAP users' passwords. If the workshop requires an LDAP authentication (wod_get_ldap_status() functions will return this information) then another function is used to update the LDAP server with the password for the given student (wod_update_ldap_passwd()`)
-The generated password will be sent back to the api-db server so that it can then send an email to allow participant to connect to the workshop.
+The generated password will be sent back to the wod-api-db server so that it can then send an email to allow participant to connect to the workshop.
 - `wod_get_appliance_baseip()` This function returns the base IP address of the appliance related to the workshop given as parameter
 - `wod_get_cleaned_status()` This function returns the status of the cleaned boolean for the user id given as parameter
 - `wod_get_compile_status()` This function will check whether the workshop needs some scripts to be compiled. For instance, if you need to authenticate against a private cloud portal and you don't want your participants to see the credentials, make sure to check the relevant box in the workshop table of the database. This compile feature will compile the authentication scripts into an executable that cannot be edited.
@@ -791,9 +791,9 @@ The generated password will be sent back to the api-db server so that it can the
 - `wod_get_range_max()` This function returns the max of the range of the users booked for the workshop id given as parameter
 - `wod_get_range_min()` This function returns the min of the range of the users booked for the workshop id given as parameter
 - `wod_get_reset_status()` This function returns the status of the reset boolean for the workshop id given as parameter. A reset should be performed when an appliance requires a reset script to be executed for final cleanup.
-- `wod_get_session_token()` This function retrieves the necessary token to make an API call to the api-db server.
+- `wod_get_session_token()` This function retrieves the necessary token to make an API call to the wod-api-db server.
 - `wod_get_varpass_status()` Does the workshop require the use of the student password as a variable ?
-- `wod_get_workshop_id()` From the workshop name, it retrieves the workshop's ID from the api-db server.
+- `wod_get_workshop_id()` From the workshop name, it retrieves the workshop's ID from the wod-api-db server.
 - `wod_get_workshop_name()` This function extracts the workshop name from the mail body, for example, WKSHP-API101 (They have to start with the WKSHP- prefix and are uppercase)
 - `wod_test_stdid()` This function checks the student ID provided by procmail API is valid: For each workshop, a dedicated student range is allocated. This function exits when the student ID is not in the correct range.
 - `wod_update_ldap_passwd()` This function updates the LDAP passwd for the student under management using the student id
@@ -916,29 +916,29 @@ rm -rf $TMPDIR
 
 - In the certain cases, some post deployment actions are needed. For instance, you may want to `git clone` some repository to leverage some data stored there. This can only occur when done with the deployment. Therefore, a `post-copy-<WKSHP>.sh` is called.
 
-- Finally, the workshop is now ready to be used by the participant. The backend therefore, needs to inform the api-db of this. To do so, it will perform two API calls:
+- Finally, the workshop is now ready to be used by the participant. The wod-backend therefore, needs to inform the wod-api-db of this. To do so, it will perform two API calls:
   *   The first API call will update the password data for the participant's allocated student.
   *   The second API call will update the participant's allocated student's status to active.
 
-These changes will trigger the api-db server to send a second email to the participant. This email will contain the necessary information for the participant to connect to its notebooks environment. The participant will then run the workshop. For each workshop, a dedicated time window is allocated. Some workshops will take longer to be run than others. The time windows varies from 2 to 4 hours maximum.The system knows how to set it up so that it will time out. This means that once the participant hits the register button on the frontend web portal, the clock starts ticking.
+These changes will trigger the wod-api-db server to send a second email to the participant. This email will contain the necessary information for the participant to connect to its notebooks environment. The participant will then run the workshop. For each workshop, a dedicated time window is allocated. Some workshops will take longer to be run than others. The time windows varies from 2 to 4 hours maximum.The system knows how to set it up so that it will time out. This means that once the participant hits the register button on the wod-frontend web portal, the clock starts ticking.
 
-Some background checks take place on the web portal to verify time spent since the registration to a given workshop. As a consequence, a reminder email is sent an hour before the workshop times out. When the bell rings at the end of the class, a new procmail API call is made to the backend server ordering a CLEANUP action. The participant can also trigger this action by registering to a new workshop before the end of the current one. He/She will have to provide the necessary information to the frontend web portal in order to end the current workshop.
+Some background checks take place on the web portal to verify time spent since the registration to a given workshop. As a consequence, a reminder email is sent an hour before the workshop times out. When the bell rings at the end of the class, a new procmail API call is made to the wod-backend server ordering a CLEANUP action. The participant can also trigger this action by registering to a new workshop before the end of the current one. He/She will have to provide the necessary information to the wod-frontend web portal in order to end the current workshop.
 
 ## CLEANUP Verb
-Let's see what is happening on the backend server to perform this CLEANUP verb.
+Let's see what is happening on the wod-backend server to perform this CLEANUP verb.
 ![WoD backend cleanup lifecycle](img/wod-backend-cleanup.png "WoD backend cleanup lifecycle")
 
 As you can see, it does not differ much from the CREATE. We still need to gather data to interact with the proper workshop from the right student. The `.procmailrc` is providing us with this information. Then, the automation kicks in through the `procmail-action-sh` script.
 
 What differs is linked to specific end of job actions that needs to be performed. So CLEANUP does:
 - The computation of the completion ratio.
-- An API call to send the completion ratio figure to the api-db server. This can be later queried to build up reporting dashboard.
+- An API call to send the completion ratio figure to the wod-api-db server. This can be later queried to build up reporting dashboard.
 - Now that we have extracted the necessary data from the student's notebooks, we can perform a cleanup of the student folder. (see wod_erase_student() upper).
 - On top of cleaning up the student folder, we also kill all the allocated student's processes. (see wod_cleanup_processes_student() upper).
 - If any appliance is involved, the script calls the related `cleanup-<WKSHP>.sh` that will perform the necessary cleanup processes on the appliance.
-- Finally, just like for the creation of a workshop process, we need to tell the frontend that the cleanup is now done. Therefore, several API calls are made to update tables in the database. We also generate a new password for the student at the cleanup phase to prevent unregistered logins and record it. The student status is set to inactive. The capacity figure is incremented by one to make the seat available again.
+- Finally, just like for the creation of a workshop process, we need to tell the wod-api-db that the cleanup is now done. Therefore, several API calls are made to update tables in the database. We also generate a new password for the student at the cleanup phase to prevent unregistered logins and record it. The student status is set to inactive. The capacity figure is incremented by one to make the seat available again.
 
-As for the CREATE phase, the regular checks occuring on the api-db server will get these data and trigger the final email sent to the participant, thanking him for his particpation.
+As for the CREATE phase, the regular checks occuring on the wod-api-db server will get these data and trigger the final email sent to the participant, thanking him for his particpation.
 
 ## RESET Verb
 Now let's look at the RESET verb.
@@ -948,7 +948,7 @@ You may wonder about the differences between the CLEANUP and RESET verbs. CLEANU
 
 When a CLEANUP occurs, it deals with the participant's student workshop and home directory (the workshop directory belonging to the home directory). It cleans up workshop content, ssh keys, skeletons. The RESET will delete leftovers from the workshop's exercices. For instance, when one runs the [Docker 101](https://github.com/Workshops-on-Demand/wod-notebooks/tree/main/WKSHP-Docker101) workshop, Docker images are created, as well as containers on a dedictaed appliance, and they should be removed at the end of the workshop,with some docker rm/rmi commands to clean up everything. However, some participants may forget to run these clean up steps themselves as part of the workshop. And the admin needs to make sure that the next participant who will be assigned the same student environment gets a fresh one. Therefore, some measures have to be taken. These measures take place when a reset flag is associated to the workshop in the database. This is typically mandatory when dealing with appliances.
 
-During the CLEANUP phase, a check is actually performed to test the presence of this flag through a simple API call on the frontend api-db server. If the workshop has a reset flag then a dedicated `reset-<WKSHP>.sh` script is called and performs the necessary tasks. In the case of [Docker 101](https://github.com/Workshops-on-Demand/wod-backend/blob/main/scripts/reset-WKSHP-Docker101.sh.j2), it will wipe out any docker images or container or network left over by the student. In some other cases, it will launch a revert to snapshot script on a virtual machine, or anything that makes the conetxt idempotent.
+During the CLEANUP phase, a check is actually performed to test the presence of this flag through a simple API call on the wod-api-db server. If the workshop has a reset flag then a dedicated `reset-<WKSHP>.sh` script is called and performs the necessary tasks. In the case of [Docker 101](https://github.com/Workshops-on-Demand/wod-backend/blob/main/scripts/reset-WKSHP-Docker101.sh.j2), it will wipe out any docker images or container or network left over by the student. In some other cases, it will launch a revert to snapshot script on a virtual machine, or anything that makes the conetxt idempotent.
 
 ## PURGE Verb
 Finally, let's consider the PURGE verb.
@@ -959,17 +959,17 @@ In a perfect world, we would have covered here what one would somehow expect fro
 In these very cases, you need to be able to cleanup the mess quickly.
 ![WoD backend failure lifecycle](img/wod-backend-failure.png "WoD backend failure lifecycle")
 
-  *   frontend - backend communication issues
+  *   wod-frontend - wod-backend communication issues
   *   JupyterHub server failure
   *   JupyterHub server - appliance server communication issues
 
 The PURGE scenario is therefore triggered on Workshops-on-Demand' deployment failures.
 
-At the registration time, when the participant hits the register button on the frontend web portal, an entry is automatically created in the database for him. It associates the participant to a student and a workshop. It also registers the date and start time of the workshop, sets the participant status to 'welcome' in the database and a first email is sent to the participant from the frontend web portal welcoming him to the Workshop-on-Demand and stating to him that within a few minutes a second email will be sent along with the necessary information (credentials and url) to connect to the workshop's environment.
+At the registration time, when the participant hits the register button on the wod-frontend web portal, an entry is automatically created in the database for him. It associates the participant to a student and a workshop. It also registers the date and start time of the workshop, sets the participant status to 'welcome' in the database and a first email is sent to the participant from the wod-frontend web portal welcoming him to the Workshop-on-Demand and stating to him that within a few minutes a second email will be sent along with the necessary information (credentials and url) to connect to the workshop's environment.
 
-If for any reason, the deployment of the workshop fails and as a consequence, no API call is made back to the frontend from the backend, the api-db could remain stuck forever and so would the participant. To overcome this, we implemented a check on the api-db server to test this welcome status. In a normal scenario, this welcome status gets updated within less than 3 minutes. If the status is not updated within 10 minutes, we consider that something went wrong during the deployment and as a result, a PURGE scenario is initiated to clean up both the backend and the api-db sides of the related registration. Of course, depending of the backend sanity, some actions could also fail. But from our experience, both api-db and backend are really reliable.
+If for any reason, the deployment of the workshop fails and as a consequence, no API call is made back to the wod-api-db from the wod-backend, the wod-api-db could remain stuck forever and so would the participant. To overcome this, we implemented a check on the wod-api-db server to test this welcome status. In a normal scenario, this welcome status gets updated within less than 3 minutes. If the status is not updated within 10 minutes, we consider that something went wrong during the deployment and as a result, a PURGE scenario is initiated to clean up both the wod-backend and the wod-api-db sides of the related registration. Of course, depending of the wod-backend sanity, some actions could also fail. But from our experience, both wod-api-db and wod-backend are really reliable.
 
-Considering now the most common case: the backend server and frontend servers can communicate but the JupyterHub server has issues to communicate with appliances. In terms of tasks associated to the PURGE scenario, you can see that we kept the minimal as there should not be much to clean up on the backend server. Simply consider that it is a CLEANUP scenario without any workshop deployment.
+Considering now the most common case: the wod-backend and wod-api-db servers can communicate but the JupyterHub server has issues to communicate with appliances. In terms of tasks associated to the PURGE scenario, you can see that we kept the minimal as there should not be much to clean up on the wod-backend server. Simply consider that it is a CLEANUP scenario without any workshop deployment.
 
 We call the same tasks to begin with as we still need student ID and workshop ID. We then initiate :
 - An update of the student's password for security reasons. (See wod_generate_randompwd()).
@@ -978,31 +978,31 @@ We call the same tasks to begin with as we still need student ID and workshop ID
 
 An email is then sent to the participant explaining to him that we encountered an issue with the deployment and that we apologize for this.
 
-Now, you should have a clearer view of what is really happening in the background when one registers for a workshop. Let's cover the day to day operations of the backend.
+Now, you should have a clearer view of what is really happening in the background when one registers for a workshop. Let's cover the day to day operations of the wod-backend.
 
 # Workshops maintenance
 
-After describing the installation, automation and usage of the backend server managing the Jupyter Notebooks, automation let's describe the management of this backend server,  often referred to as Day2 operations.
+After describing the installation, automation and usage of the wod-backend server managing the Jupyter Notebooks, automation let's describe the management of this wod-backend server,  often referred to as Day2 operations.
 
-Once up and running, the main purpose of the backend server is to deliver Workshops-on-Demand. But to do so, it may require updates, upgrades, and/or new kernels for the JupyterHub server. If new workshops are created, this means you'll need new jinja templates for related workshops' scripts (i.e `create-<WKSHP>.sh`, `cleanup-<WKSHP>.sh`, `reset-<WKSHP>.sh`, among others). This also means new variable files. And obviously, these templates and variables will need to be taken into account by scripts and notebooks. Some tasks handle all of this.
+Once up and running, the main purpose of the wod-backend server is to deliver Workshops-on-Demand. But to do so, it may require updates, upgrades, and/or new kernels for the JupyterHub server. If new workshops are created, this means you'll need new jinja templates for related workshops' scripts (i.e `create-<WKSHP>.sh`, `cleanup-<WKSHP>.sh`, `reset-<WKSHP>.sh`, among others). This also means new variable files. And obviously, these templates and variables will need to be taken into account by scripts and notebooks. Some tasks handle all of this.
 
-## Backend server management:
+## wod-ackend server management
 
 If you take a look at the file structure of the `wod-backend` directory, you will discover that the team did its best to sort things properly depending on their relationship to system or workshops.
 
-### Content of the backend server:
+### Content of the wod-backend server
 
 Simple tree view of the wod-backend directory:
 
 ![Tree view of wod-backend directory](img/wod-backend-tree-dot.png "Tree view of wod-backend directory")
 
-The `ansible` folder contains all the necessary playbooks and variables files to support the main functions of the backend server. It provides playbooks for an installation of the backend server itself or for appliances (virtual machines or containers) managed by it, or workshops as well as maintenance tasks.
+The `ansible` folder contains all the necessary playbooks and variables files to support the main functions of the wod-backend server. It provides playbooks for an installation of the wod-backend server itself or for appliances (virtual machines or containers) managed by it, or workshops as well as maintenance tasks.
 
 The `conf` folder hosts configuration files in a Jinja format. Once expanded, the resulting files will be used by relevant workshops.
 
 The `scripts` folder hosts script files used to manage the workshops and appliances lifecycle, as well as the major scripts seen in the deployment of workshops chapter upper.
 
-The `sys` folder hosts script files used during the install of the backend itself.
+The `sys` folder hosts script files used during the install of the wod-backend itself.
 
 ![Tree view of wod-backend/ansible directory](img/wod-backend-tree-ansible.png "Tree view of wod-backend/ansible directory")
 
@@ -1078,11 +1078,11 @@ tail -1000 .mail/from
 
 The very last line of the trace will provide you with the credentials necessary to test your workshop.
 
-There are two types of activities that can occur on the backend server: punctual or regular. The punctual activity is one that is performed once every now and then. The regular one is usually set up on the backend server as a cron job. Sometimes however, one of these cron tasks can be forced manually if necessary. One of the most important scheduled task is the `wod-deliver` task explained below. Among the punctual tasks is the update of the backend server.
+There are two types of activities that can occur on the wod-backend server: punctual or regular. The punctual activity is one that is performed once every now and then. The regular one is usually set up on the wod-backend server as a cron job. Sometimes however, one of these cron tasks can be forced manually if necessary. One of the most important scheduled task is the `wod-deliver` task explained below. Among the punctual tasks is the update of the wod-backend server.
 
-### Update of the backend server
+### Update of the wod-backend server
 
-The backend server hosts all the necessary content for delivering workshops: it supplies notebooks, scripts and playbooks to deploy and personalize them. It also hosts some services that are needed by the overall architecture solution (JupyterHub, Procmail, Fail2ban among others).
+The wod-backend server hosts all the necessary content for delivering workshops: it supplies notebooks, scripts and playbooks to deploy and personalize them. It also hosts some services that are needed by the overall architecture solution (JupyterHub, Procmail, Fail2ban among others).
 
 Services are installed once and for all at the installation time. These services may evolve over time. One may need to update the JupyterHub application to fix a bug or get new features. If you are willing to update these services or add new ones, you will need to update the relevant installation playbooks in the `wod-backend/ansible` directory.
 
@@ -1152,9 +1152,9 @@ You'll work as the `wodadmin` user in its home directory, under the `wod-backend
 
 In order wof your modifications to be taken in account, you'll need to run the `wod-deliver` script manually.
 
-### Regular maintenance of the backend server
+### Regular maintenance of the wod-backend server
 
-On a daily basis, some tasks are launched through this same `wod-deliver` script in order to check the integrity of the backend server. Some tasks are related to the security and integrity of the system. The following playbook is at the heart of this verification: `wod-backend/ansible/check_backend.yml`. Full version of the file is available [here](https://github.com/Workshops-on-Demand/wod-backend/blob/main/ansible/check_backend.yml) for review.
+On a daily basis, some tasks are launched through this same `wod-deliver` script in order to check the integrity of the wod-backend server. Some tasks are related to the security and integrity of the system. The following playbook is at the heart of this verification: `wod-backend/ansible/check_backend.yml`. Full version of the file is available [here](https://github.com/Workshops-on-Demand/wod-backend/blob/main/ansible/check_backend.yml) for review.
 
 It checks a quite long list of items like:
 * nproc hard and soft limits
@@ -1191,7 +1191,7 @@ It checks a quite long list of items like:
   * Call private tasks if available. It performs the private part before users management to allow interruption of the deliver script during normal operations - waiting till end of users management can take hours for 2000 users. Potential impact: private scripts are run before users creation, so may miss some part of setup.
   * Ensure JupyterHub users exist
 
-A similar set of scripts and features exist for the different components of the solution ([check_api-db.yml](https://github.com/Workshops-on-Demand/wod-backend/blob/main/ansible/check_api-db.yml) for api-db server, [check_frontend.yml ](https://github.com/Workshops-on-Demand/wod-backend/blob/main/ansible/check_frontend.yml) for frontend server for instance).
+A similar set of scripts and features exist for the different components of the solution ([check_api-db.yml](https://github.com/Workshops-on-Demand/wod-backend/blob/main/ansible/check_api-db.yml) for wod-api-db server, [check_frontend.yml ](https://github.com/Workshops-on-Demand/wod-backend/blob/main/ansible/check_frontend.yml) for wod-frontend server for instance).
 
 # Creating a new workshop and integrating it in the WoD platform
 
@@ -1218,7 +1218,7 @@ A workshop directory should be named WKSHP-<Name> (where Name is a free string w
 * `README.md` (content of 0-ReadMeFirst.ipynb in markdown format, Name mandatory)
 * `wod.yml` (Name and presence mandatory)
 
-The 4 first files contains the instructins and code. The first one has to be named `0-ReadMeFirst.ipynb` in order to iopen automatically in the student's browser. To make the workshop compliant to our platform, you have to provide a set of metadata that will be used for the workshop's integration into the infrastructure (content of a new raw in our database and tile on the frontend). This file is called **`wod.yml`**.
+The 4 first files contains the instructins and code. The first one has to be named `0-ReadMeFirst.ipynb` in order to iopen automatically in the student's browser. To make the workshop compliant to our platform, you have to provide a set of metadata that will be used for the workshop's integration into the infrastructure (content of a new raw in our database and tile on the wod-frontend). This file is called **`wod.yml`**.
 
 This file is parsed at installation time to feed our database and also during updates operations.
 Here is an example of such a file:
@@ -1264,15 +1264,15 @@ The following fields are required provided by the developer of the notebook:
 * **replayLink** This entry links to a dedicated replay video (made earlier) and is displayed when clicking on the learn more page of the workshop
 * **replayId** This entry is reserved for the HPE platform.
 
-**Note:** *Links can be URL pointing to an external server hosting the files, or to the WoD frontend server, under its subdirectory `static/img`*
+**Note:** *Links can be URL pointing to an external server hosting the files, or to the wod-frontend server, under its subdirectory `static/img`*
 
 The following fields are required by the infrastructure and provided by their admins:
 
 * **active:** Tag to set to enable visibility of the workshop's tile in the registration portal and its usage.
 * **capacity:** The number of maximum concurrent students allowed to take on the workshop. Linked to what the platform can deliver.
 * **range:** The range between which students get picked at registration time. This is a set containing a ,ini,u, and ,axi,u, value. Ranges between workshops should **never** overwrite.
-* **reset** entries are to be used by backend server automation if dedicated reset scripts are required by the workshop (cleaning appliances e.g.)
-* **ldap** entries are to be used by backend server automation if ldap authentication is required by the workshop
+* **reset** entries are to be used by wod-backend server automation if dedicated reset scripts are required by the workshop (cleaning appliances e.g.)
+* **ldap** entries are to be used by wod-backend server automation if ldap authentication is required by the workshop
 * **location:** If your setup includes multiple JupyterHub servers, use this field to allocate workshops according to your needs. This is a way to load balance the WoD platform.
 * **alternateLocation:** If your setup includes multiple JupyterHub servers, use this field to record the other servers where the notebook may be running. This is a way to load balance the WoD platform.
 * **compile:** This entry will be filled with the name of scripts to be compiled at deployment time. This feature allows the admin to hide login scripts and credentials in non-editable executable files. The parameter should be a list of coma separated script names without any path surrounded by single quote.
@@ -1291,14 +1291,14 @@ In this example, we'll add a simple workshop that does not require any infrastru
 
 As `wodadmin` on the Workshops-on-Demand infrastructure, you have to perform several tasks:
 
-### On the backend server
+### On the wod-backend server
 
 Testing and validating installation of the new JupyterHub kernel by:
 
 1. Creating a new branch for this test under `wod-backend` (`git checkout -b kernelxyz`).
-2. Modifying the [backend server installation yaml file](https://github.com/Workshops-on-Demand/wod-backend/blob/main/ansible/install_backend.yml#L326) to include the new kernel.
+2. Modifying the [wod-backend server installation yaml file](https://github.com/Workshops-on-Demand/wod-backend/blob/main/ansible/install_backend.yml#L326) to include the new kernel.
 3. Push your modifications into your forked repository (`git push myrepo`).
-4. Validating the changes by testing a new backend install process from scratch (See upper, remember you can use an `install.priv` file to point to your own branch and your own repository).
+4. Validating the changes by testing a new wod-backend install process from scratch (See upper, remember you can use an `install.priv` file to point to your own branch and your own repository).
 
 Integrate the Jupyter Notebook content from the developer by:
 
@@ -1306,7 +1306,7 @@ Integrate the Jupyter Notebook content from the developer by:
 2. Creating the Wokshop directory (`mkdir WKSHP-xyz`)
 3. Copying the developer's content into it and ensure the naming conventions exposed upper have been followed. Commit the changes in your branch (`git add -p ; git commit`)
 4. Pushing your modifications into your forked repository (`git push myrepo`).
-5. Testing the workshop either locally or on the backend server leveraging the `wod-test-action.sh` script.
+5. Testing the workshop either locally or on the wod-backend server leveraging the `wod-test-action.sh` script.
 
 The live content inside the `wod-notebooks` directory is what will be used during the deployment of the workshop so you can directly use it starting from now.
 
@@ -1314,7 +1314,7 @@ The developer in charge of building the Jupyter Notebook can use our [existing N
 
 Once ready you can make pull requests to the upstream project if you intend to share your modifications with the community or you can keep them private if you prefer. In this case, the best place to host your modifications is under the `wod-private` repository.
 
-### On the api-db server:
+### On the wod-api-db server
 
 Integrate the Jupyter Notebook metadata by:
 
@@ -1329,7 +1329,7 @@ In this example, we'll add a comple workshop that does require a specific infras
 
 As `wodadmin` on the Workshops-on-Demand infrastructure, you have to perform several tasks:
 
-### On the backend server
+### On the wod-backend server
 
 Integrate the management of the appliance in the infrastructure by:
 
@@ -1340,11 +1340,11 @@ Integrate the management of the appliance in the infrastructure by:
   * the `cleanup-<WKSHP>.sh` script is in charge of getting on the appliance any content that was created during the Workshop run before erasure. Typically, the backup of the completion ratio is done in this script. It will be called from the `wod-backend/scripts/procmail-action.sh` during the CLEANUP verb management.
   * the `reset-<WKSHP>.sh` script is in charge of putting the appliance back to its initial state so that idempotency works. Typically, removal of container and container images is done in this script, as well as credential reset and student directory content removed. It will be called from the `wod-backend/scripts/procmail-action.sh` during the RESET verb management. It should also be called at the begining of the `create-<WKSHP>.sh` to be sure we have a clean state before starting. And it should call the generic `wod-backend/scripts/reset-appliance.sh` which resets password and ssh keys created during the CREATE verb.
 * Creating the appliance by running: `wod-backend/scripts/setup-appliance.sh <WKSHP>`. This will:
-  * Setup globally all appliances using a common `wod-backend/ansible/setup_appliance.yml` playbook which manages the local Linux users in a similar way than on the backend server
+  * Setup globally all appliances using a common `wod-backend/ansible/setup_appliance.yml` playbook which manages the local Linux users in a similar way than on the wod-backend server
   * Setup specifically the appliance using a `wod-backend/ansible/setup_<WKSHP>_appliance.yml` playbook which performs the additional configuration steps needed for that type of workshop. For example, installing the Docker engine when running docker images during the workshop.
   * Setup the appliance calling a `wod-backend/script/setup_<WKSHP>.sh` playbook which performs the additional configuration steps needed for that type of workshop. For example, downloading docker images and building new derived ones from them.
 * Testing the workshop using the `wod-test-action.sh` script to test a workshop lifecycle action from deployment (CREATE) to CLEANUP, RESET, or PURGE verbs.
 
 **Note:** *The available trace under `~/.mail/from` will detail the different steps of the action and allow you to troubelshoot any issue.*
 
-When all the scripts are functional and the necessary actions have been performed both on backend and api-db servers, some end to end functional tests can be conducted using the Web interface of the wod-frontend server as described earlier for the simple workshop example.
+When all the scripts are functional and the necessary actions have been performed both on wod-backend and wod-api-db servers, some end to end functional tests can be conducted using the Web interface of the wod-frontend server as described earlier for the simple workshop example.
