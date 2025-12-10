@@ -98,7 +98,7 @@ We created as many Git repositories as needed, for the infrastructure management
 - [wod-install](https://github.com/Workshops-on-Demand/wod-install) for the installation of the WoD infrastructure, allowing you to install either Backend, API-DB or Frontend servers using a single line of command.
 - [wod-doc](https://github.com/Workshops-on-Demand/.github) for the project documentation (you're on it !)
 
-**Note**: There are 7 repositories available for now.
+**Note:** *There are 7 repositories available for now.*
 
 # How it works
 
@@ -292,7 +292,7 @@ In order to setup the backend server, you will need:
 * A fresh minimal OS install on physical/virtualized server running Ubuntu 24.04 leveraging any deployment mechanism of your choice.(e.g. through [iLO](https://en.wikipedia.org/wiki/HPE_Integrated_Lights-Out), automatic installation with [preseed](https://wiki.debian.org/DebianInstaller/Preseed), [virt-lightning](https://github.com/virt-lightning/virt-lightning), etc...).
 * A Linux account with sudo priviledges on your Linux distro. Name it `install`
 
-**Note**: In order to support 100 concurrent users, you need:
+**Note:** *In order to support 100 concurrent users, you need:*
 
 * 2 cpus or more machine
 * 128 GB of RAM
@@ -535,7 +535,7 @@ At the end of the installation process:
 
 All playbooks are self-documented. Please check for details.
 
-**Note: A wod-install.log is available under the home folder of the install user under the `.wod-install` directory. It contains the installation log along with a another file containg the wodadmin credentials.**
+**Note:** *A wod-install.log is available under the home folder of the install user under the `.wod-install` directory. It contains the installation log along with a another file containg the wodadmin credentials.*
 
 We leave it to you to handle the necessary port redirection and SSL certificates management when needed. In our case, we went for a simple yet efficient solution based on an OPNSense Firewall along with a HAProxy setup to manage ports'redirection, HTTP to HTTPS Redirection, SSL Certificates. The backend also includes a Fail2ban service for login security management.
 
@@ -565,7 +565,7 @@ git remote add myrepo https://github.com/Account/wod-private.git
   * `WODPRIVBRANCH="main"`
   * `WODPRIVREPO="git@github.com:Account/Private-Repo.git wod-private"`
 
-**Note:** When using a token
+**Note:** *When using a token*
 
 Please refer to the following [url](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) to generate a `token` file in the `install` sub-directory of wod-backend:
 
@@ -1263,7 +1263,7 @@ The following fields are required provided by the developer of the notebook:
 * **replayLink** This entry links to a dedicated replay video (made earlier) and is displayed when clicking on the learn more page of the workshop
 * **replayId** This entry is reserved for the HPE platform.
 
-***Note:*** Links can be URL pointing to an external server hosting the files, or to the WoD frontend server, under its subdirectory `static/img`
+**Note:** *Links can be URL pointing to an external server hosting the files, or to the WoD frontend server, under its subdirectory `static/img`*
 
 The following fields are required by the infrastructure and provided by their admins:
 
@@ -1344,6 +1344,6 @@ Integrate the management of the appliance in the infrastructure by:
   * Setup the appliance calling a `wod-backend/script/setup_<WKSHP>.sh` playbook which performs the additional configuration steps needed for that type of workshop. For example, downloading docker images and building new derived ones from them.
 * Testing the workshop using the `wod-test-action.sh` script to test a workshop lifecycle action from deployment (CREATE) to CLEANUP, RESET, or PURGE verbs.
 
-***Note:*** The available trace under `~/.mail/from` will detail the different steps of the action and allow you to troubelshoot any issue.
+**Note:** *The available trace under `~/.mail/from` will detail the different steps of the action and allow you to troubelshoot any issue.*
 
 When all the scripts are functional and the necessary actions have been performed both on backend and api-db servers, some end to end functional tests can be conducted using the Web interface of the wod-frontend server as described earlier for the simple workshop example.
