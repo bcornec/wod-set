@@ -1004,9 +1004,9 @@ The `scripts` folder hosts script files used to manage the workshops and applian
 
 The `sys` folder hosts script files used during the install of the backend itself.
 
+![Tree view of wod-backend/ansible directory](img/wod-backend-tree-ansible.png "Tree view of wod-backend/ansible directory")
 
 At the root of the `ansible` directory can be found:
-![Tree view of wod-backend/ansible directory](img/wod-backend-tree-ansible.png "Tree view of wod-backend/ansible directory")
 
 `check_backend.yml playbook`: This playbook is used to perform daily compliance checks of the system. These checks ensure that this is a compliant WoD system by checking security (firewall rules, users setup, ...) and services, among other things.
 
@@ -1027,8 +1027,9 @@ At the root of the `ansible` directory can be found:
 
 It also hosts the `inventory` file describing the role of JupyterHub servers. Place your server (FQDN) in a group used as PBKDIR namerole (given at install time to differentiate potential multiple installations).
 
-At the root of the `scripts` directory can be found:
 ![Tree view of wod-backend/scripts directory](img/wod-backend-tree-scripts.png "Tree view of wod-backend/scripts directory")
+
+At the root of the `scripts` directory can be found:
 
 When one creates a workshop, one needs to provide a series of notebooks and in some cases some scripts to manage the creation and setup of a related appliance along with additional scripts to manage its lifecycle in the overall Workshops-on-Demand architecture (CREATE, CLEANUP, RESET verbs documented earlier). These scripts need to be located in the `scripts` folder. On the other hand, the system scripts are located in the `sys` folder.
 
