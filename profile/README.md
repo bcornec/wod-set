@@ -55,6 +55,7 @@ You can also refer to the various presentations made on this project:
 * [OSXP 2021](https://www.slideshare.net/HuinLucile/api-rest-procmail-la-rescousse) and the [Video](https://www.youtube.com/watch?v=zZm6ObQATDI)
 * [JDLL 2024](https://pretalx.jdll.org/jdll2024/talk/VUEQFM/)
 * [AlpOSS 2024](https://alposs.fr/2024/presentations/03%20-%20HPE%20-%20Bruno%20Cornec.pdf)
+* [HPE Developer Community Meetup 2025](https://www.youtube.com/watch?v=RSt7ewTulPE)
 
 # Installing a WoD infrastructure
 
