@@ -64,9 +64,9 @@ In order to install a full infrastructure, a set of reliminary steps are require
 * Install a VM/Physical machine with [Ubuntu 24.04 LTS](https://www.ubuntu-fr.org/download/) minimal and default setup. (20.04 or 22.04 should still work, while less tested these days).
 * On each VM the user ubuntu is being created and can be used for the initial setup. For access to the machine and account refer to the [Ubuntu documentation](https://ubuntu.com/server/docs/basic-installation) or how a VM template was set up. Ensure that this user as root access (either via sudo or with password access)
 * Then you have to ensure minimal dependencies are present to run the installation. We only need git. All other dependencies are installed by the installer. So issue on each machine: `sudo apt install git`
-* Once installed you can use it to clone the installer [wod-install repository](https://github.com/Workshops-on-Demand/wod-install) again on each machine: `git clone https://github.com/Workshops-on-Demand/wod-install`
+* Once installed you can use it to clone the installer (part of the [install project](https://github.com/Workshops-on-Demand/wod-install)) again on each machine: `git clone https://github.com/Workshops-on-Demand/wod-install`
 * Then you use the installer to install your WoD infrastructure: `cd wod-install/install ; ./install.sh -h`
-* [Reading the example](https://github.com/Workshops-on-Demand/wod-backend/blob/main/install/install.sh#L89) for the full infrastructure at the end of the help message should give you the required guidance to set it up.
+* [Reading the example](https://github.com/Workshops-on-Demand/wod-install/blob/main/install/install.sh#L89) for the full infrastructure at the end of the help message should give you the required guidance to set it up.
 
 At the time of this writing, this reads:
 ```
@@ -81,6 +81,7 @@ Full installation example of a stack with:
 - management user being wodmgr
  
 On the be1 machine:
+
   sudo ./install.sh -a apidb.local:10000:https -f front.local:8000:https \
   -g test -u wodmgr -p 9000 -s wodmailer@local\
   -b be1.local:8010 -n 1 -t backend \
